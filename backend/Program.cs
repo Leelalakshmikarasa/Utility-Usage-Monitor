@@ -83,7 +83,12 @@ builder.Services.AddControllers()
 var app = builder.Build();
 
 // Middlewares order (VERY IMPORTANT)
+
+// Serve SPA static files (React build) from wwwroot
 app.UseCors("AllowAll");
+
+app.UseDefaultFiles();
+app.UseStaticFiles();
 
 app.UseSwagger();
 app.UseSwaggerUI();
@@ -92,5 +97,8 @@ app.UseAuthentication();
 app.UseAuthorization();   
 
 app.MapControllers();
+
+// If a request does not match an API route, serve the SPA index.html
+app.MapFallbackToFile("index.html");
 
 app.Run();

@@ -1,7 +1,18 @@
 import axios from "axios";
 
-const api = axios.create({
-  baseURL: "http://localhost:5231/api" // update if your backend port is different
+const API = axios.create({
+    baseURL: "https://localhost:7086/api"   // ✅ FIXED
 });
 
-export default api;
+// ✅ Add token automatically
+API.interceptors.request.use((req) => {
+    const token = localStorage.getItem("token");
+
+    if (token) {
+        req.headers.Authorization = `Bearer ${token}`;
+    }
+
+    return req;
+});
+
+export default API;

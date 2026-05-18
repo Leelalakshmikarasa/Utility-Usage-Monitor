@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using backend.Repos;
 using backend.Models;
+using backend.Data;
 
 namespace backend.Controllers
 {
@@ -12,49 +13,95 @@ namespace backend.Controllers
     {
         private readonly IUserRepository _users;
         private readonly IConsumptionRepository _consumption;
+        private readonly AppDbContext _context;
 
         public SupervisorController(
             IUserRepository users,
-            IConsumptionRepository consumption)
+            IConsumptionRepository consumption,
+            AppDbContext context)
         {
             _users = users;
             _consumption = consumption;
+            _context = context;
         }
 
-        //  Get ALL consumers
-        [HttpGet("consumers")]
-        public IActionResult GetConsumers()
-        {
-            return Ok(_users.GetByRole(RoleType.Consumer));
-        }
+        
 
-        //  Get all technicians
+        // ✅ GET → Technicians (CLEAN OUTPUT)
         [HttpGet("technicians")]
         public IActionResult GetTechnicians()
         {
-            return Ok(_users.GetByRole(RoleType.Technician));
+            var technicians = _context.Users
+                .Where(t => t.Role == RoleType.Technician)
+                .Select(t => new
+                {
+                    t.Id,
+                    t.UserId,
+                    t.Username,
+                    t.Email,
+                    t.PhoneNumber,
+                    t.Address,
+                    t.Role,
+
+                    // ✅ Consumers under technician (same address)
+                    ConsumersCount = _context.Users
+                        .Count(u => u.Role == RoleType.Consumer &&
+                                    u.Address.ToLower() == t.Address.ToLower()),
+
+                    // ✅ Total complaints of those consumers
+                    TotalComplaints = _context.Complaints
+                        .Count(c => _context.Users
+                            .Any(u => u.UserId == c.UserId &&
+                                      u.Address.ToLower() == t.Address.ToLower())),
+
+                    // ✅ Pending complaints
+                    PendingComplaints = _context.Complaints
+                        .Count(c => c.Status == "Pending" &&
+                            _context.Users.Any(u => u.UserId == c.UserId &&
+                                                     u.Address.ToLower() == t.Address.ToLower())),
+
+                    // ✅ Resolved complaints
+                    ResolvedComplaints = _context.Complaints
+                        .Count(c => c.Status == "Resolved" &&
+                            _context.Users.Any(u => u.UserId == c.UserId &&
+                                                     u.Address.ToLower() == t.Address.ToLower()))
+                })
+                .ToList();
+
+            return Ok(technicians);
         }
 
-
-        //  Delete user
+        // ✅ DELETE → User
         [HttpDelete("user/{id}")]
-public IActionResult DeleteUser(string id)
-{
-    var user = _users.GetById(id);
+        public IActionResult DeleteUser(string id)
+        {
+            var user = _users.GetById(id);
 
-    if (user == null)
-        return NotFound("User not found");
+            if (user == null)
+                return NotFound("User not found");
 
-    _users.Delete(id);
+            _users.Delete(id);
+            return Ok("Deleted Successfully");
+        }
 
-    return Ok("Deleted Successfully");
-}
-
+        // ✅ REPORT → Total Consumption by Address (CLEAN OUTPUT)
         [HttpGet("consumptions/by-address")]
-    public IActionResult GetTotalConsumptionByAddress()
-    {
-    var data = _consumption.GetTotalByAddress();
-    return Ok(data);
-    }
+        public IActionResult GetTotalConsumptionByAddress()
+        {
+            var data = _context.Consumptions
+                .Join(_context.Users,
+                      c => c.UserId,
+                      u => u.UserId,
+                      (c, u) => new { c, u })
+                .GroupBy(x => x.u.Address)
+                .Select(g => new
+                {
+                    Address = g.Key,
+                    TotalUsage = g.Sum(x => x.c.Units)
+                })
+                .ToList();
+
+            return Ok(data);
+        }
     }
 }

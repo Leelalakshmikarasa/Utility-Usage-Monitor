@@ -39,7 +39,6 @@ namespace backend.Controllers
             return _context.Users.FirstOrDefault(u => u.UserId == userId);
         }
 
-        // ✅ GET → Consumers (Filtered by Address)
         [HttpGet("consumers")]
         public IActionResult GetConsumers()
         {
@@ -51,6 +50,25 @@ namespace backend.Controllers
                 .Where(u => u.Role == RoleType.Consumer &&
                             u.Address.Trim().ToLower() ==
                             technician.Address.Trim().ToLower())
+
+                // ✅ ✅ IMPORTANT CHANGE HERE
+                .Select(u => new
+                {
+                    u.Id,
+                    u.UserId,
+                    u.Username,
+                    u.Email,
+                    u.PhoneNumber,
+                    u.Address,
+                    u.Role,
+
+                    // ✅ counts instead of lists
+                    ComplaintsCount = _context.Complaints
+                        .Count(c => c.UserId == u.UserId),
+
+                    DevicesCount = _context.Devices
+                        .Count(d => d.UserId == u.UserId)
+                })
                 .ToList();
 
             return Ok(consumers);

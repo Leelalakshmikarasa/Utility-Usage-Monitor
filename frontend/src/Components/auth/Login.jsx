@@ -1,107 +1,89 @@
-import React, { Component } from "react";
- 
-class Register extends Component {
-  constructor(props) {
-    super(props);
- 
-    this.state = {
-      username: "",
-      email: "",
-      password: "",
-      role: "",
-      phoneNumber: "",
-      address: "",
-      message: ""
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import api from "../../api";
+
+function Login() {
+    const [form, setForm] = useState({ email: "", password: "" });
+    const [message, setMessage] = useState("");
+    const navigate = useNavigate();
+
+    const handleChange = (e) =>
+        setForm({ ...form, [e.target.name]: e.target.value });
+
+    const submit = async (e) => {
+        e.preventDefault();
+        setMessage("");
+
+        try {
+            const res = await api.post("/auth/login", form);
+
+            const token =
+                typeof res.data === "string"
+                    ? res.data
+                    : res.data.token;
+
+            if (!token) {
+                setMessage("Invalid login response");
+                return;
+            }
+
+            // ✅ Save token
+            localStorage.setItem("token", token);
+
+            // ✅ Decode role
+            const payload = JSON.parse(atob(token.split(".")[1]));
+            const role =
+                payload["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+
+            setMessage("✅ Login successful");
+
+            // ✅ Redirect
+            if (role === "Supervisor") navigate("/supervisor");
+            else if (role === "Technician") navigate("/technician");
+            else navigate("/consumer");
+
+        } catch (err) {
+            setMessage(err.response?.data || "Server error");
+        }
     };
- 
-    this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-  }
- 
-  handleChange(e) {
-    this.setState({
-      [e.target.name]: e.target.value
-    });
-  }
- 
-  async handleSubmit(e) {
-    e.preventDefault();
- 
-    try {
-      const response = await fetch("http://localhost:5000/api/Auth/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          username: this.state.username,
-          email: this.state.email,
-          password: this.state.password,
-          role: this.state.role,
-          phoneNumber: this.state.phoneNumber,
-          address: this.state.address
-        })
-      });
- 
-      if (response.status === 200) {
-        this.setState({
-          message: "Registration Successful ✅"
-        });
-      } else {
-        const error = await response.text();
-        this.setState({
-          message: error
-        });
-      }
-    } catch (err) {
-      this.setState({
-        message: "Server Error ❌"
-      });
-    }
-  }
- 
-  render() {
+
     return (
-      <div className="container">
-        <h2>Register</h2>
- 
-        <form onSubmit={this.handleSubmit}>
-          <label>Username</label><br />
-          <input type="text" name="username" onChange={this.handleChange} />
-          <br /><br />
- 
-          <label>Email</label><br />
-          <input type="email" name="email" onChange={this.handleChange} />
-          <br /><br />
- 
-          <label>Password</label><br />
-          <input type="password" name="password" onChange={this.handleChange} />
-          <br /><br />
- 
-          <label>Role</label><br />
-          <select name="role" onChange={this.handleChange}>
-            <option value="">Select Role</option>
-            <option value="Consumer">Consumer</option>
-            <option value="Admin">Admin</option>
-          </select>
-          <br /><br />
- 
-          <label>Phone Number</label><br />
-          <input type="text" name="phoneNumber" onChange={this.handleChange} />
-          <br /><br />
- 
-          <label>Address</label><br />
-          <input type="text" name="address" onChange={this.handleChange} />
-          <br /><br />
- 
-          <button type="submit">Register</button>
-        </form>
- 
-        <p>{this.state.message}</p>
-      </div>
+        <div className="auth-container">
+            <h2>Login</h2>
+
+            <form onSubmit={submit}>
+
+                <div>
+                    <label>Email</label><br />
+                    <input name="email" type="email" onChange={handleChange} required />
+                </div>
+
+                <br />
+
+                <div>
+                    <label>Password</label><br />
+                    <input name="password" type="password" onChange={handleChange} required />
+                </div>
+
+                <br />
+
+                <button type="submit">Login</button>
+
+            </form>
+
+            <br />
+
+            {message && <p>{message}</p>}
+
+            {/* ✅ Navigation */}
+            <p>
+                Don’t have an account?{" "}
+                <span style={{ color: "blue", cursor: "pointer" }} onClick={() => navigate("/register")}>
+                    Register here
+                </span>
+            </p>
+        </div>
     );
-  }
 }
- 
-export default Register;
-//this is register.jsx
+
+export default Login;
