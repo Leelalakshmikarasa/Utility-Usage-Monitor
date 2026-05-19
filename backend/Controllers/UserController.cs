@@ -27,54 +27,50 @@ namespace backend.Controllers
             _consumptions = consumptions;
         }
 
-        //  GET → User Info + Profile
+        // ✅ GET → User Profile
         [HttpGet("{id}")]
         public IActionResult GetUser(string id)
         {
-            return Ok(_users.GetById(id));
-        }
-
-        //  PUT → Update User Profile
-        /*[HttpPut("{id}")]
-        public IActionResult UpdateUser(int id, User updated)
-        {
             var user = _users.GetById(id);
-
             if (user == null)
                 return NotFound();
 
-            user.Username = updated.Username;
-            user.Email = updated.Email;
-
-            _users.Update(user);
-
             return Ok(user);
-        }*/
+        }
 
-        //  GET → Assigned Devices
+        // ✅ GET → Devices assigned to user
         [HttpGet("{id}/devices")]
         public IActionResult GetDevices(string id)
         {
             return Ok(_devices.GetByUser(id));
         }
 
-        //  GET → Complaints
+        // ✅ GET → Complaints raised by user
         [HttpGet("{id}/complaints")]
         public IActionResult GetComplaints(string id)
         {
             return Ok(_complaints.GetByUser(id));
         }
 
-        //  POST → Raise Complaint
         [HttpPost("{id}/complaint")]
-        public IActionResult AddComplaint(string id, Complaint c)
+        public IActionResult AddComplaint(string id, [FromBody] Complaint complaint)
         {
-            c.UserId = id;
-            _complaints.Add(c);
-            return Ok(c);
+            // ✅ Validate DeviceId
+            if (complaint.DeviceId == null)
+                return BadRequest("DeviceId is required");
+
+            var device = _devices.GetById(complaint.DeviceId.Value);
+
+            if (device == null || device.UserId != id)
+                return BadRequest("Invalid device for this user");
+
+            complaint.UserId = id;
+
+            _complaints.Add(complaint);
+            return Ok(complaint);
         }
 
-        //  GET → Consumption + Cost
+        // ✅ GET → Consumption details
         [HttpGet("{id}/consumption")]
         public IActionResult GetConsumption(string id)
         {

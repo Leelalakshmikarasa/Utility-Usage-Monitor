@@ -9,13 +9,18 @@ namespace backend.Models
         public required string Title { get; set; }
         public required string Description { get; set; }
 
+        // ✅ DEFAULT STATUS (DO NOT SEND FROM FRONTEND)
         public string Status { get; set; } = "Pending";
 
-        // ✅ Foreign Key
+        // ✅ Foreign Keys
         public string UserId { get; set; } = "";
+        public int? DeviceId { get; set; }   
 
-        // ✅ Navigation (FIXED)
+        // ✅ Navigation
         [JsonIgnore]
         public User? User { get; set; }
+
+        [JsonIgnore]
+        public UtilityDevice? Device { get; set; }
     }
 }

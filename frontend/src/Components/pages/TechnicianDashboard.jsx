@@ -4,18 +4,23 @@ import api from "../../api";
 function TechnicianDashboard() {
     const [tableData, setTableData] = useState([]);
 
-    // ✅ states
+    // Highest usage report
     const [reportUsers, setReportUsers] = useState([]);
     const [selectedUser, setSelectedUser] = useState("");
-    const [showResult, setShowResult] = useState(false);
+    const [showReport, setShowReport] = useState(false);
 
-    // ✅ useEffect (fixed)
+    // Add device
+    const [newDevice, setNewDevice] = useState({
+        userId: "",
+        deviceName: ""
+    });
+
     useEffect(() => {
         loadTableData();
         loadReportUsers();
     }, []);
 
-    // ✅ MAIN TABLE
+    // ================= MAIN TABLE =================
     const loadTableData = async () => {
         const conRes = await api.get("/technician/consumers");
         const compRes = await api.get("/technician/complaints");
@@ -27,50 +32,75 @@ function TechnicianDashboard() {
         const consumptions = consRes.data;
         const devices = devRes.data;
 
-        const merged = users.map((u) => {
-            const device = devices.find((d) => d.userId === u.userId);
-            const consumption = consumptions.find((c) => c.userId === u.userId);
-            const complaint = complaints.find((c) => c.userId === u.userId);
+        // ✅ ONE ROW PER COMPLAINT (FIX)
+        const merged = complaints.map((c) => {
+            const user = users.find(u => u.userId === c.userId);
+            const device = devices.find(d => d.id === c.deviceId);
+            const consumption = consumptions.find(cs => cs.userId === c.userId);
 
             return {
-                userId: u.userId,
-                deviceId: device?.id || "-",
-                address: u.address,
+                complaintId: c.id,
+                userId: c.userId,
+                deviceId: c.deviceId ?? "-",
+                address: user?.address || "-",
                 units: consumption?.units || 0,
                 cost: consumption?.cost || 0,
-                complaint: complaint?.description || "No complaint",
-                status: complaint?.status || "No complaint"
+                complaint: c.description,
+                status: c.status
             };
         });
 
         setTableData(merged);
     };
 
-    // ✅ LOAD DROPDOWN
+    // ================= PUT → RESOLVE COMPLAINT =================
+    const resolveComplaint = async (userId, deviceId) => {
+        try {
+            await api.put(`/technician/resolve/${userId}/${deviceId}`);
+            alert("Complaint resolved ✅");
+            loadTableData();
+        } catch (err) {
+            console.error(err.response?.data || err.message);
+            alert("Error resolving complaint ❌");
+        }
+    };
+
+    // ================= POST → ADD DEVICE =================
+    const addDevice = async () => {
+        if (!newDevice.userId || !newDevice.deviceName) {
+            alert("Enter User Id and Device Name");
+            return;
+        }
+
+        try {
+            await api.post("/technician/device", newDevice);
+            alert("Device added ✅");
+            setNewDevice({ userId: "", deviceName: "" });
+            loadTableData();
+        } catch {
+            alert("Error adding device ❌");
+        }
+    };
+
+    // ================= HIGHEST USAGE REPORT =================
     const loadReportUsers = async () => {
         const res = await api.get("/technician/report/user-device-month");
         setReportUsers(res.data.users || []);
     };
 
-    // ✅ BUTTON CLICK
     const handleGetReport = () => {
         if (!selectedUser) {
             alert("Please select a consumer");
             return;
         }
-        setShowResult(true);
+        setShowReport(true);
     };
-
-    // ✅ FIND SELECTED DATA
-    const selectedData = reportUsers.find(
-        (u) => u.userId === selectedUser
-    );
 
     return (
         <div>
             <h2>Technician Dashboard</h2>
 
-            {/* ✅ MAIN TABLE */}
+            {/* ================= MAIN TABLE ================= */}
             <table border="1" cellPadding="8">
                 <thead>
                     <tr>
@@ -81,8 +111,10 @@ function TechnicianDashboard() {
                         <th>Cost</th>
                         <th>Complaint</th>
                         <th>Status</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
+
                 <tbody>
                     {tableData.map((row, i) => (
                         <tr key={i}>
@@ -93,20 +125,47 @@ function TechnicianDashboard() {
                             <td>{row.cost}</td>
                             <td>{row.complaint}</td>
                             <td>{row.status}</td>
+                            <td>
+                                {row.status === "Pending" && (
+                                    <button onClick={() => resolveComplaint(row.userId, row.deviceId)}>
+                                        Resolve
+                                    </button>
+                                )}
+                            </td>
                         </tr>
                     ))}
                 </tbody>
             </table>
 
-            {/* ✅ REPORT */}
-            <h3 style={{ marginTop: "25px" }}>Highest Usage Report</h3>
+            {/* ================= ADD DEVICE ================= */}
+            <h3 style={{ marginTop: "30px" }}>Add Device</h3>
 
-            {/* ✅ SELECT */}
+            <input
+                placeholder="User Id"
+                value={newDevice.userId}
+                onChange={(e) =>
+                    setNewDevice({ ...newDevice, userId: e.target.value })
+                }
+            />
+
+            <input
+                placeholder="Device Name"
+                value={newDevice.deviceName}
+                onChange={(e) =>
+                    setNewDevice({ ...newDevice, deviceName: e.target.value })
+                }
+            />
+
+            <button onClick={addDevice}>Add Device</button>
+
+            {/* ================= HIGHEST USAGE REPORT ================= */}
+            <h3 style={{ marginTop: "30px" }}>Highest Usage Report</h3>
+
             <select
                 value={selectedUser}
                 onChange={(e) => {
                     setSelectedUser(e.target.value);
-                    setShowResult(false);
+                    setShowReport(false);
                 }}
             >
                 <option value="">Select Consumer</option>
@@ -117,14 +176,16 @@ function TechnicianDashboard() {
                 ))}
             </select>
 
-            {/* ✅ BUTTON */}
             <button onClick={handleGetReport} style={{ marginLeft: "10px" }}>
                 Get Report
             </button>
 
-            {/* ✅ RESULT TABLE */}
-            {showResult && selectedData && (
-                <table border="1" cellPadding="8" style={{ marginTop: "15px" }}>
+            {showReport && (
+                <table
+                    border="1"
+                    cellPadding="8"
+                    style={{ marginTop: "15px" }}
+                >
                     <thead>
                         <tr>
                             <th>User Id</th>
@@ -135,15 +196,19 @@ function TechnicianDashboard() {
                         </tr>
                     </thead>
                     <tbody>
-                        {(selectedData.devices || []).map((d, i) => (
-                            <tr key={i}>
-                                <td>{selectedData.userId}</td>
-                                <td>{d.deviceName}</td>
-                                <td>{d.highestConsumptionMonth?.month}</td>
-                                <td>{d.highestConsumptionMonth?.year}</td>
-                                <td>{d.highestConsumptionMonth?.totalUnits}</td>
-                            </tr>
-                        ))}
+                        {reportUsers
+                            .filter((u) => u.userId === selectedUser)
+                            .flatMap((u) =>
+                                (u.devices || []).map((d, i) => (
+                                    <tr key={`${u.userId}-${i}`}>
+                                        <td>{u.userId}</td>
+                                        <td>{d.deviceName}</td>
+                                        <td>{d.highestConsumptionMonth?.month}</td>
+                                        <td>{d.highestConsumptionMonth?.year}</td>
+                                        <td>{d.highestConsumptionMonth?.totalUnits}</td>
+                                    </tr>
+                                ))
+                            )}
                     </tbody>
                 </table>
             )}
@@ -151,5 +216,4 @@ function TechnicianDashboard() {
     );
 }
 
-// ✅ IMPORTANT: export MUST be outside function
 export default TechnicianDashboard;

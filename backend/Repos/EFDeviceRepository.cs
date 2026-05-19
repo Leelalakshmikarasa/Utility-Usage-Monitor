@@ -25,23 +25,25 @@ namespace backend.Repos
             return _context.Devices.ToList();
         }
 
+        // ✅ ADD THIS
+        public UtilityDevice? GetById(int id)
+        {
+            return _context.Devices.FirstOrDefault(d => d.Id == id);
+        }
+
         public void Add(UtilityDevice device)
-{
-    try
-    {
-        _context.Devices.Add(device);
-        _context.SaveChanges();
-    }
-    catch (DbUpdateException ex)
-    {
-        //  UNIQUE constraint violation
-        throw new InvalidOperationException(
-            "Device name already exists. Please choose a unique device name."
-        );
+        {
+            try
+            {
+                _context.Devices.Add(device);
+                _context.SaveChanges();
+            }
+            catch (DbUpdateException)
+            {
+                throw new InvalidOperationException(
+                    "Device name already exists. Please choose a unique device name."
+                );
+            }
+        }
     }
 }
-    }
-}
-
-
-

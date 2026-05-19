@@ -13,5 +13,9 @@ namespace backend.Models
 
         [JsonIgnore]
         public ICollection<UtilityConsumption>? Consumptions { get; set; }
+
+        // ✅ ADD THIS (FIX)
+        [JsonIgnore]
+        public ICollection<Complaint>? Complaints { get; set; }
     }
 }

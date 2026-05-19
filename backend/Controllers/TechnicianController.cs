@@ -122,30 +122,20 @@ namespace backend.Controllers
         }
 
         // ✅ PUT → Resolve Complaint (Restricted by Address)
-        [HttpPut("resolve/{id}")]
-        public IActionResult ResolveComplaint(string id)
+        [HttpPut("resolve/{userId}/{deviceId}")]
+        public IActionResult Resolve(string userId, int deviceId)
         {
-            var technician = GetCurrentTechnician();
-            if (technician == null)
-                return Unauthorized();
+            var complaint = _complaints
+                .GetByUserAndDevice(userId, deviceId)
+                .FirstOrDefault(c => c.Status == "Pending");
 
-            var complaint = _context.Complaints.FirstOrDefault(c => c.UserId == id);
             if (complaint == null)
-                return NotFound();
-
-            var user = _context.Users.FirstOrDefault(u => u.UserId == complaint.UserId);
-
-            if (user == null ||
-                user.Address.Trim().ToLower() !=
-                technician.Address.Trim().ToLower())
-            {
-                return Forbid("You can only resolve complaints in your assigned area");
-            }
+                return NotFound("No pending complaint found for this device");
 
             complaint.Status = "Resolved";
-            _context.SaveChanges();
+            _complaints.Update(complaint);
 
-            return Ok(complaint);
+            return Ok("Complaint resolved");
         }
 
         [HttpPost("device")]
