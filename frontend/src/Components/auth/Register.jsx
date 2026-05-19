@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../api";
+import "./Register.css";
 
 function Register() {
     const [form, setForm] = useState({
@@ -24,11 +25,8 @@ function Register() {
 
         try {
             await api.post("/auth/register", form);
-
             setMessage("✅ Registration successful! Redirecting to login...");
-
             setTimeout(() => navigate("/"), 1500);
-
         } catch (err) {
             if (err.response?.data?.includes("exists")) {
                 setMessage("⚠️ Already registered. Please login.");
@@ -43,67 +41,48 @@ function Register() {
             <h2>Register</h2>
 
             <form onSubmit={submit}>
-
-                <div>
-                    <label>Username</label><br />
+                <div className="form-group">
+                    <label>Username</label>
                     <input name="username" onChange={handleChange} required />
                 </div>
 
-                <br />
-
-                <div>
-                    <label>Email</label><br />
+                <div className="form-group">
+                    <label>Email</label>
                     <input name="email" type="email" onChange={handleChange} required />
                 </div>
 
-                <br />
-
-                <div>
-                    <label>Password</label><br />
+                <div className="form-group">
+                    <label>Password</label>
                     <input name="password" type="password" onChange={handleChange} required />
                 </div>
 
-                <br />
-
-                <div>
-                    <label>Role</label><br />
-                    <select name="role" onChange={handleChange}>
+                <div className="form-group">
+                    <label>Role</label>
+                    <select name="role" value={form.role} onChange={handleChange}>
                         <option value="Consumer">Consumer</option>
                         <option value="Technician">Technician</option>
                         <option value="Supervisor">Supervisor</option>
                     </select>
                 </div>
 
-                <br />
-
-                <div>
-                    <label>Phone Number</label><br />
+                <div className="form-group">
+                    <label>Phone Number</label>
                     <input name="phoneNumber" onChange={handleChange} />
                 </div>
 
-                <br />
-
-                <div>
-                    <label>Address</label><br />
+                <div className="form-group">
+                    <label>Address</label>
                     <input name="address" onChange={handleChange} />
                 </div>
 
-                <br />
-
                 <button type="submit">Register</button>
-
             </form>
-
-            <br />
 
             {message && <p>{message}</p>}
 
-            {/* ✅ Navigation */}
             <p>
                 Already registered?{" "}
-                <span style={{ color: "blue", cursor: "pointer" }} onClick={() => navigate("/")}>
-                    Please sign in
-                </span>
+                <span onClick={() => navigate("/")}>Please sign in</span>
             </p>
         </div>
     );

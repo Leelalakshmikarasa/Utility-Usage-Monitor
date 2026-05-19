@@ -1,46 +1,60 @@
 import { Link, useNavigate } from "react-router-dom";
+import "./Navbar.css";
 
 function Navbar() {
     const navigate = useNavigate();
 
-    // ✅ get token
     const token = localStorage.getItem("token");
-
     let role = null;
 
-    // ✅ decode role from token
+    // ✅ Decode role safely
     if (token) {
         try {
             const payload = JSON.parse(atob(token.split(".")[1]));
-            role = payload["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+            role =
+                payload["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
         } catch {
             role = null;
         }
     }
 
     const logout = () => {
-        localStorage.removeItem("token"); // ✅ remove only token
-        navigate("/");                   // ✅ React navigation
+        localStorage.removeItem("token");
+        navigate("/");
     };
 
     return (
-        <div style={{ marginBottom: "20px" }}>
+        <nav className="navbar">
+            <div className="nav-left">
+                <Link to="/" className="nav-brand">
+                    Utility Monitor
+                </Link>
 
-            <Link to="/">Home</Link>{" | "}
-
-            {role === "Consumer" && <Link to="/user">User</Link>}
-            {role === "Technician" && <Link to="/tech">Technician</Link>}
-            {role === "Supervisor" && <Link to="/supervisor">Supervisor</Link>}
+                {role === "Consumer" && (
+                    <Link to="/consumer" className="nav-link">
+                        User
+                    </Link>
+                )}
+                {role === "Technician" && (
+                    <Link to="/technician" className="nav-link">
+                        Technician
+                    </Link>
+                )}
+                {role === "Supervisor" && (
+                    <Link to="/supervisor" className="nav-link">
+                        Supervisor
+                    </Link>
+                )}
+            </div>
 
             {token && (
-                <>
-                    {" | "}
-                    <button onClick={logout} style={{ marginLeft: "10px" }}>
+                <div className="nav-right">
+                    <button onClick={logout} className="logout-btn">
                         Logout
                     </button>
-                </>
+                </div>
             )}
-        </div>
+        </nav>
     );
 }
 
