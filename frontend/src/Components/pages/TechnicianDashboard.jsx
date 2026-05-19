@@ -1,128 +1,187 @@
 import React, { useEffect, useState } from "react";
 import api from "../../api";
+import "./TechnicianDashboard.css";
+
+// ✅ Chart imports
+import { Bar } from "react-chartjs-2";
+import {
+    Chart as ChartJS,
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    Tooltip,
+    Legend
+} from "chart.js";
+
+ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    Tooltip,
+    Legend
+);
 
 function TechnicianDashboard() {
     const [tableData, setTableData] = useState([]);
-
-    // Highest usage report
     const [reportUsers, setReportUsers] = useState([]);
-    const [selectedUser, setSelectedUser] = useState("");
-    const [showReport, setShowReport] = useState(false);
 
-    // Add device
+    // ✅ Add Device
     const [newDevice, setNewDevice] = useState({
         userId: "",
         deviceName: ""
     });
 
+    // ✅ Consumer Details
+    const [consumerData, setConsumerData] = useState([]);
+    const [selectedDevice, setSelectedDevice] = useState({});
+    const [filters, setFilters] = useState({});
+
+    // ✅ Reports
+    const [selectedConsumer, setSelectedConsumer] = useState("");
+
     useEffect(() => {
         loadTableData();
         loadReportUsers();
+        loadConsumerDetails();
     }, []);
 
-    // ================= MAIN TABLE =================
+    // ================= COMPLAINTS =================
     const loadTableData = async () => {
-        const conRes = await api.get("/technician/consumers");
-        const compRes = await api.get("/technician/complaints");
-        const consRes = await api.get("/technician/consumptions");
-        const devRes = await api.get("/technician/device");
-
-        const users = conRes.data;
-        const complaints = compRes.data;
-        const consumptions = consRes.data;
-        const devices = devRes.data;
-
-        // ✅ ONE ROW PER COMPLAINT (FIX)
-        const merged = complaints.map((c) => {
-            const user = users.find(u => u.userId === c.userId);
-            const device = devices.find(d => d.id === c.deviceId);
-            const consumption = consumptions.find(cs => cs.userId === c.userId);
-
-            return {
-                complaintId: c.id,
-                userId: c.userId,
-                deviceId: c.deviceId ?? "-",
-                address: user?.address || "-",
-                units: consumption?.units || 0,
-                cost: consumption?.cost || 0,
-                complaint: c.description,
-                status: c.status
-            };
-        });
-
-        setTableData(merged);
-    };
-
-    // ================= PUT → RESOLVE COMPLAINT =================
-    const resolveComplaint = async (userId, deviceId) => {
         try {
-            await api.put(`/technician/resolve/${userId}/${deviceId}`);
-            alert("Complaint resolved ✅");
-            loadTableData();
-        } catch (err) {
-            console.error(err.response?.data || err.message);
-            alert("Error resolving complaint ❌");
+            const res = await api.get("/technician/complaints");
+            setTableData(Array.isArray(res.data) ? res.data : []);
+        } catch {
+            setTableData([]);
         }
     };
 
-    // ================= POST → ADD DEVICE =================
+    // ================= CONSUMER DETAILS =================
+    const loadConsumerDetails = async () => {
+        try {
+            const res = await api.get("/technician/consumers");
+            setConsumerData(res.data || []);
+        } catch {
+            setConsumerData([]);
+        }
+    };
+
+    // ================= RESOLVE =================
+    const resolveComplaint = async (userId, deviceId) => {
+        try {
+            await api.put(`/technician/resolve/${userId}/${deviceId}`);
+            alert("Resolved ✅");
+            loadTableData();
+        } catch {
+            alert("Error ❌");
+        }
+    };
+
+    // ================= ADD DEVICE =================
     const addDevice = async () => {
         if (!newDevice.userId || !newDevice.deviceName) {
-            alert("Enter User Id and Device Name");
+            alert("Please select user and enter device name");
             return;
         }
 
         try {
             await api.post("/technician/device", newDevice);
-            alert("Device added ✅");
+            alert("Added ✅");
             setNewDevice({ userId: "", deviceName: "" });
-            loadTableData();
+            loadConsumerDetails();
         } catch {
-            alert("Error adding device ❌");
+            alert("Error ❌");
         }
     };
 
-    // ================= HIGHEST USAGE REPORT =================
+    // ================= REPORT =================
     const loadReportUsers = async () => {
-        const res = await api.get("/technician/report/user-device-month");
-        setReportUsers(res.data.users || []);
+        try {
+            const res = await api.get("/technician/report/user-device-month");
+            setReportUsers(res.data.users || []);
+        } catch {
+            setReportUsers([]);
+        }
     };
 
-    const handleGetReport = () => {
-        if (!selectedUser) {
-            alert("Please select a consumer");
-            return;
+    // ================= GRAPH DATA =================
+    const deviceSet = new Set();
+    const datasets = [];
+    const colors = ["#6366f1", "#22c55e", "#f59e0b", "#ef4444", "#06b6d4"];
+
+    const filteredUsers = reportUsers.filter(
+        u => u.username === selectedConsumer
+    );
+
+    filteredUsers.forEach((user, index) => {
+        const deviceMap = {};
+
+        user.devices.forEach(d => {
+            if (d.highestConsumptionMonth) {
+                deviceSet.add(d.deviceName);
+                deviceMap[d.deviceName] = {
+                    units: d.highestConsumptionMonth.totalUnits,
+                    month: d.highestConsumptionMonth.month,
+                    year: d.highestConsumptionMonth.year
+                };
+            }
+        });
+
+        datasets.push({
+            label: user.username,
+            data: [],
+            meta: deviceMap,
+            backgroundColor: colors[index % colors.length]
+        });
+    });
+
+    const labels = Array.from(deviceSet);
+    datasets.forEach(ds => {
+        ds.data = labels.map(label => ds.meta[label]?.units ?? 0);
+    });
+
+    const reportChartData = { labels, datasets };
+
+    const reportChartOptions = {
+        responsive: true,
+        plugins: {
+            tooltip: {
+                callbacks: {
+                    label: ctx => {
+                        const meta = datasets[ctx.datasetIndex].meta[ctx.label];
+                        return meta
+                            ? [`Units: ${meta.units}`, `Month: ${meta.month}`, `Year: ${meta.year}`]
+                            : `${ctx.parsed.y} units`;
+                    }
+                }
+            }
         }
-        setShowReport(true);
     };
 
     return (
-        <div>
+        <div className="dashboard-container">
             <h2>Technician Dashboard</h2>
 
-            {/* ================= MAIN TABLE ================= */}
-            <table border="1" cellPadding="8">
+            {/* ================= COMPLAINTS ================= */}
+            <h3>Complaints</h3>
+            <table>
                 <thead>
                     <tr>
-                        <th>User Id</th>
-                        <th>Device Id</th>
+                        <th>UserId</th>
+                        <th>UserName</th>
+                        <th>Device</th>
                         <th>Address</th>
-                        <th>Units</th>
-                        <th>Cost</th>
                         <th>Complaint</th>
                         <th>Status</th>
                         <th>Action</th>
                     </tr>
                 </thead>
-
                 <tbody>
                     {tableData.map((row, i) => (
                         <tr key={i}>
                             <td>{row.userId}</td>
-                            <td>{row.deviceId}</td>
+                            <td>{row.username}</td>
+                            <td>{row.deviceName}</td>
                             <td>{row.address}</td>
-                            <td>{row.units}</td>
-                            <td>{row.cost}</td>
                             <td>{row.complaint}</td>
                             <td>{row.status}</td>
                             <td>
@@ -138,79 +197,119 @@ function TechnicianDashboard() {
             </table>
 
             {/* ================= ADD DEVICE ================= */}
-            <h3 style={{ marginTop: "30px" }}>Add Device</h3>
-
-            <input
-                placeholder="User Id"
+            <h3>Add Device</h3>
+            <select
                 value={newDevice.userId}
-                onChange={(e) =>
-                    setNewDevice({ ...newDevice, userId: e.target.value })
-                }
-            />
+                onChange={e => setNewDevice({ ...newDevice, userId: e.target.value })}
+            >
+                <option value="">Select User</option>
+                {consumerData.map(c => (
+                    <option key={c.userId} value={c.userId}>{c.userId}</option>
+                ))}
+            </select>
 
             <input
                 placeholder="Device Name"
                 value={newDevice.deviceName}
-                onChange={(e) =>
-                    setNewDevice({ ...newDevice, deviceName: e.target.value })
-                }
+                onChange={e => setNewDevice({ ...newDevice, deviceName: e.target.value })}
             />
 
-            <button onClick={addDevice}>Add Device</button>
+            <button onClick={addDevice}>Add</button>
 
-            {/* ================= HIGHEST USAGE REPORT ================= */}
-            <h3 style={{ marginTop: "30px" }}>Highest Usage Report</h3>
+            {/* ================= CONSUMER DETAILS ================= */}
+            <h3>Consumer Details</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>User Id</th>
+                        <th>Consumer Name</th>
+                        <th>Address</th>
+                        <th>Total Devices</th>
+                        <th>Select Device</th>
+                        <th>Date</th>
+                        <th>Units</th>
+                        <th>Cost</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {consumerData.length === 0 ? (
+                        <tr>
+                            <td colSpan="7">No data available</td>
+                        </tr>
+                    ) : (
+                        consumerData.map(c => {
+                            const selected = selectedDevice[c.userId];
+                            const filter = filters[c.userId] || {};
 
+                            const matched = selected?.consumptions?.find(
+                                cons =>
+                                    Number(cons.month) === Number(filter.month) &&
+                                    Number(cons.year) === Number(filter.year)
+                            );
+
+                            return (
+                                <tr key={c.userId}>
+                                    <td>{c.userId}</td>
+                                    <td>{c.username}</td>   
+                                    <td>{c.address}</td>
+                                    <td>
+                                        <select
+                                            value={selected?.deviceId || ""}
+                                            onChange={e => {
+                                                const dev = c.devices.find(
+                                                    d => String(d.deviceId) === e.target.value
+                                                );
+                                                setSelectedDevice(prev => ({
+                                                    ...prev,
+                                                    [c.userId]: dev
+                                                }));
+                                            }}
+                                        >
+                                            <option value="">Select</option>
+                                            {c.devices.map(d => (
+                                                <option key={d.deviceId} value={d.deviceId}>
+                                                    {d.deviceName}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input
+                                            type="month"
+                                            onChange={e => {
+                                                const [year, month] = e.target.value.split("-");
+                                                setFilters(prev => ({
+                                                    ...prev,
+                                                    [c.userId]: { year, month }
+                                                }));
+                                            }}
+                                        />
+                                    </td>
+                                    <td>{matched ? matched.units : "-"}</td>
+                                    <td>{matched ? matched.cost : "-"}</td>
+                                </tr>
+                            );
+                        })
+                    )}
+                </tbody>
+            </table>
+
+            {/* ================= REPORTS ================= */}
+            <h3>Reports</h3>
             <select
-                value={selectedUser}
-                onChange={(e) => {
-                    setSelectedUser(e.target.value);
-                    setShowReport(false);
-                }}
+                value={selectedConsumer}
+                onChange={e => setSelectedConsumer(e.target.value)}
             >
                 <option value="">Select Consumer</option>
-                {reportUsers.map((u) => (
-                    <option key={u.userId} value={u.userId}>
-                        {u.userId}
-                    </option>
+                {reportUsers.map(u => (
+                    <option key={u.userId} value={u.username}>{u.username}</option>
                 ))}
             </select>
 
-            <button onClick={handleGetReport} style={{ marginLeft: "10px" }}>
-                Get Report
-            </button>
-
-            {showReport && (
-                <table
-                    border="1"
-                    cellPadding="8"
-                    style={{ marginTop: "15px" }}
-                >
-                    <thead>
-                        <tr>
-                            <th>User Id</th>
-                            <th>Device</th>
-                            <th>Highest Month</th>
-                            <th>Year</th>
-                            <th>Total Units</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {reportUsers
-                            .filter((u) => u.userId === selectedUser)
-                            .flatMap((u) =>
-                                (u.devices || []).map((d, i) => (
-                                    <tr key={`${u.userId}-${i}`}>
-                                        <td>{u.userId}</td>
-                                        <td>{d.deviceName}</td>
-                                        <td>{d.highestConsumptionMonth?.month}</td>
-                                        <td>{d.highestConsumptionMonth?.year}</td>
-                                        <td>{d.highestConsumptionMonth?.totalUnits}</td>
-                                    </tr>
-                                ))
-                            )}
-                    </tbody>
-                </table>
+            {selectedConsumer && (
+                <div className="chart-container">
+                    <Bar data={reportChartData} options={reportChartOptions} />
+                </div>
             )}
         </div>
     );

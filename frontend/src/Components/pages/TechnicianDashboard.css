@@ -1,0 +1,72 @@
+body {
+    background-color: #f4f6f9;
+}
+
+.dashboard-container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 20px;
+    font-family: "Segoe UI", Tahoma, sans-serif;
+}
+
+    .dashboard-container h2 {
+        text-align: center;
+        margin-bottom: 25px;
+    }
+
+    .dashboard-container h3 {
+        margin-top: 30px;
+        color: #374151;
+    }
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.07);
+    margin-bottom: 20px;
+}
+
+thead {
+    background-color: #6366f1;
+    color: white;
+}
+
+th, td {
+    padding: 12px;
+    text-align: center;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+tbody tr:hover {
+    background-color: #eef2ff;
+}
+
+button {
+    background-color: #6366f1;
+    color: white;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+    button:hover {
+        background-color: #4f46e5;
+    }
+
+input, select {
+    padding: 8px;
+    margin-right: 10px;
+    border-radius: 6px;
+    border: 1px solid #d1d5db;
+}
+
+.chart-container {
+    background-color: white;
+    padding: 20px;
+    margin-top: 20px;
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+}

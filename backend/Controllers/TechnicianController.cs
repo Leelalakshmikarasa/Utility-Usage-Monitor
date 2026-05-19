@@ -39,6 +39,7 @@ namespace backend.Controllers
             return _context.Users.FirstOrDefault(u => u.UserId == userId);
         }
 
+        // ✅ CONSUMERS (WITH USERNAME ✅)
         [HttpGet("consumers")]
         public IActionResult GetConsumers()
         {
@@ -50,31 +51,42 @@ namespace backend.Controllers
                 .Where(u => u.Role == RoleType.Consumer &&
                             u.Address.Trim().ToLower() ==
                             technician.Address.Trim().ToLower())
-
-                // ✅ ✅ IMPORTANT CHANGE HERE
-                .Select(u => new
-                {
-                    u.Id,
-                    u.UserId,
-                    u.Username,
-                    u.Email,
-                    u.PhoneNumber,
-                    u.Address,
-                    u.Role,
-
-                    // ✅ counts instead of lists
-                    ComplaintsCount = _context.Complaints
-                        .Count(c => c.UserId == u.UserId),
-
-                    DevicesCount = _context.Devices
-                        .Count(d => d.UserId == u.UserId)
-                })
                 .ToList();
 
-            return Ok(consumers);
+            var result = consumers.Select(c => new
+            {
+                userId = c.UserId,
+                username = c.Username,          // ✅ FIXED
+                address = c.Address,
+
+                totalDevices = _context.Devices
+                    .Count(d => d.UserId == c.UserId),
+
+                devices = _context.Devices
+                    .Where(d => d.UserId == c.UserId)
+                    .Select(d => new
+                    {
+                        deviceId = d.Id,
+                        deviceName = d.DeviceName,
+
+                        consumptions = _context.Consumptions
+                            .Where(cs => cs.UtilityDeviceId == d.Id)
+                            .Select(cs => new
+                            {
+                                month = cs.Date.Month,
+                                year = cs.Date.Year,
+                                units = cs.Units,
+                                cost = cs.Cost
+                            })
+                            .ToList()
+                    })
+                    .ToList()
+            }).ToList();
+
+            return Ok(result);
         }
 
-        // ✅ GET → Complaints (Filtered by Address)
+        // ✅ COMPLAINTS (WITH USERNAME)
         [HttpGet("complaints")]
         public IActionResult GetComplaints()
         {
@@ -82,46 +94,28 @@ namespace backend.Controllers
             if (technician == null)
                 return Unauthorized();
 
-            var userIds = _context.Users
-                .Where(u => u.Address.Trim().ToLower() ==
-                            technician.Address.Trim().ToLower())
-                .Select(u => u.UserId)
-                .ToList();
-
-            var complaints = _context.Complaints
-                .Where(c => userIds.Contains(c.UserId))
-                .ToList();
+            var complaints = (
+                from c in _context.Complaints
+                join u in _context.Users on c.UserId equals u.UserId
+                join d in _context.Devices on c.DeviceId equals d.Id
+                where u.Address.Trim().ToLower() ==
+                      technician.Address.Trim().ToLower()
+                select new
+                {
+                    userId = u.UserId,
+                    username = u.Username,
+                    address = u.Address,
+                    deviceId = d.Id,
+                    deviceName = d.DeviceName,
+                    complaint = c.Title,
+                    status = c.Status
+                }
+            ).ToList();
 
             return Ok(complaints);
         }
 
-        // ✅ GET → Consumptions (Filtered by Address)
-        [HttpGet("consumptions")]
-        public IActionResult GetConsumptionsByAddress()
-        {
-            var technician = GetCurrentTechnician();
-            if (technician == null)
-                return Unauthorized();
-
-            var userIds = _context.Users
-                .Where(u => u.Address.Trim().ToLower() ==
-                            technician.Address.Trim().ToLower())
-                .Select(u => u.UserId)
-                .ToList();
-
-            var deviceIds = _context.Devices
-                .Where(d => userIds.Contains(d.UserId))
-                .Select(d => d.Id)
-                .ToList();
-
-            var consumptions = _context.Consumptions
-                .Where(c => deviceIds.Contains(c.UtilityDeviceId))
-                .ToList();
-
-            return Ok(consumptions);
-        }
-
-        // ✅ PUT → Resolve Complaint (Restricted by Address)
+        // ✅ RESOLVE COMPLAINT
         [HttpPut("resolve/{userId}/{deviceId}")]
         public IActionResult Resolve(string userId, int deviceId)
         {
@@ -130,7 +124,7 @@ namespace backend.Controllers
                 .FirstOrDefault(c => c.Status == "Pending");
 
             if (complaint == null)
-                return NotFound("No pending complaint found for this device");
+                return NotFound("No pending complaint found");
 
             complaint.Status = "Resolved";
             _complaints.Update(complaint);
@@ -138,59 +132,26 @@ namespace backend.Controllers
             return Ok("Complaint resolved");
         }
 
+        // ✅ ADD DEVICE
         [HttpPost("device")]
-public IActionResult AddDevice(UtilityDevice device)
-{
-    var technician = GetCurrentTechnician();
-    if (technician == null)
-        return Unauthorized();
-
-    var user = _context.Users.FirstOrDefault(u => u.UserId == device.UserId);
-
-    if (user == null)
-        return BadRequest("Invalid UserId.");
-
-    if (user.Role != RoleType.Consumer)
-        return BadRequest("Devices can only be assigned to consumers.");
-
-    if (user.Address.Trim().ToLower() != 
-        technician.Address.Trim().ToLower())
-    {
-        return Forbid("You can assign devices only within your area.");
-    }
-
-    try
-    {
-        _devices.Add(device);
-        return Ok(device);
-    }
-    catch (InvalidOperationException ex)
-    {
-        return BadRequest(ex.Message);
-    }
-}
-        // ✅ GET → Devices (Filtered by Address)
-        [HttpGet("device")]
-        public IActionResult GetAllDevices()
+        public IActionResult AddDevice(UtilityDevice device)
         {
             var technician = GetCurrentTechnician();
             if (technician == null)
                 return Unauthorized();
 
-            var userIds = _context.Users
-                .Where(u => u.Address.Trim().ToLower() ==
-                            technician.Address.Trim().ToLower())
-                .Select(u => u.UserId)
-                .ToList();
+            var user = _context.Users.FirstOrDefault(u => u.UserId == device.UserId);
+            if (user == null || user.Role != RoleType.Consumer)
+                return BadRequest("Invalid consumer");
 
-            var devices = _context.Devices
-                .Where(d => userIds.Contains(d.UserId))
-                .ToList();
+            if (user.Address.Trim().ToLower() != technician.Address.Trim().ToLower())
+                return Forbid();
 
-            return Ok(devices);
+            _devices.Add(device);
+            return Ok(device);
         }
 
-        // ✅ REPORT → Highest Month per Device per User
+        // ✅ REPORT (WITH USERNAME)
         [HttpGet("report/user-device-month")]
         public IActionResult GetUserDeviceReport()
         {
@@ -198,12 +159,14 @@ public IActionResult AddDevice(UtilityDevice device)
             if (technician == null)
                 return Unauthorized();
 
-            var userIds = _context.Users
-                .Where(u => u.Address.Trim().ToLower() ==
-                            technician.Address.Trim().ToLower()
-                         && u.Role == RoleType.Consumer)
-                .Select(u => u.UserId)
+            var users = _context.Users
+                .Where(u => u.Role == RoleType.Consumer &&
+                            u.Address.Trim().ToLower() ==
+                            technician.Address.Trim().ToLower())
+                .Select(u => new { u.UserId, u.Username })
                 .ToList();
+
+            var userIds = users.Select(u => u.UserId).ToList();
 
             var devices = _context.Devices
                 .Where(d => userIds.Contains(d.UserId))
@@ -214,11 +177,8 @@ public IActionResult AddDevice(UtilityDevice device)
                     _context.Consumptions,
                     d => d.Id,
                     c => c.UtilityDeviceId,
-                    (device, consumptions) => new
-                    {
-                        device,
-                        consumptions
-                    })
+                    (device, consumptions) => new { device, consumptions }
+                )
                 .Where(x => x.consumptions.Any())
                 .Select(x => new
                 {
@@ -246,6 +206,7 @@ public IActionResult AddDevice(UtilityDevice device)
                 .Select(g => new
                 {
                     UserId = g.Key,
+                    Username = users.First(u => u.UserId == g.Key).Username,
                     Devices = g.Select(d => new
                     {
                         d.DeviceId,
@@ -255,11 +216,7 @@ public IActionResult AddDevice(UtilityDevice device)
                 })
                 .ToList();
 
-            return Ok(new
-            {
-                Address = technician.Address,
-                Users = finalResult
-            });
+            return Ok(new { Users = finalResult });
         }
     }
 }

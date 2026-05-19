@@ -4,6 +4,7 @@ import Login from "./Components/auth/Login";
 import Register from "./Components/auth/Register";
 import SupervisorDashboard from "./Components/pages/SupervisorDashboard";
 import TechnicianDashboard from "./Components/pages/TechnicianDashboard";
+import UserDashboard from "./Components/pages/UserDashboard";
 
 // ✅ Import Navbar
 import Navbar from "./Components/common/Navbar";
@@ -22,6 +23,7 @@ function App() {
                     <Route path="/register" element={<Register />} />
                     <Route path="/supervisor" element={<SupervisorDashboard />} />
                     <Route path="/technician" element={<TechnicianDashboard />} />
+                    <Route path="/consumer" element={<UserDashboard />} />
                 </Routes>
             </div>
         </BrowserRouter>
