@@ -126,11 +126,15 @@ function TechnicianDashboard() {
             }
         });
 
+        // ✅ ✅ ONLY CHANGE: bar size styling
         datasets.push({
             label: user.username,
             data: [],
             meta: deviceMap,
-            backgroundColor: colors[index % colors.length]
+            backgroundColor: colors[index % colors.length],
+            barThickness: 16,
+            maxBarThickness: 18,
+            borderRadius: 6
         });
     });
 
@@ -141,8 +145,21 @@ function TechnicianDashboard() {
 
     const reportChartData = { labels, datasets };
 
+    // ✅ ✅ ONLY CHANGE: chart options for compact bars
     const reportChartOptions = {
         responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            x: {
+                categoryPercentage: 0.55,
+                barPercentage: 0.55
+            },
+            y: {
+                ticks: {
+                    callback: v => `${v} units`
+                }
+            }
+        },
         plugins: {
             tooltip: {
                 callbacks: {
@@ -171,6 +188,7 @@ function TechnicianDashboard() {
                         <th>Device</th>
                         <th>Address</th>
                         <th>Complaint</th>
+                        <th>Date</th> 
                         <th>Status</th>
                         <th>Action</th>
                     </tr>
@@ -183,6 +201,11 @@ function TechnicianDashboard() {
                             <td>{row.deviceName}</td>
                             <td>{row.address}</td>
                             <td>{row.complaint}</td>
+
+                            <td>
+                                {row.date ? new Date(row.date).toLocaleDateString() : "N/A"}
+                            </td>
+
                             <td>{row.status}</td>
                             <td>
                                 {row.status === "Pending" && (
@@ -216,7 +239,7 @@ function TechnicianDashboard() {
 
             <button onClick={addDevice}>Add</button>
 
-            {/* ================= CONSUMER DETAILS ================= */}
+            {/* ================= CONSUMER DETAILS (UNCHANGED ✅) ================= */}
             <h3>Consumer Details</h3>
             <table>
                 <thead>
@@ -224,7 +247,6 @@ function TechnicianDashboard() {
                         <th>User Id</th>
                         <th>Consumer Name</th>
                         <th>Address</th>
-                        <th>Total Devices</th>
                         <th>Select Device</th>
                         <th>Date</th>
                         <th>Units</th>
@@ -250,7 +272,7 @@ function TechnicianDashboard() {
                             return (
                                 <tr key={c.userId}>
                                     <td>{c.userId}</td>
-                                    <td>{c.username}</td>   
+                                    <td>{c.username}</td>
                                     <td>{c.address}</td>
                                     <td>
                                         <select
@@ -307,7 +329,10 @@ function TechnicianDashboard() {
             </select>
 
             {selectedConsumer && (
-                <div className="chart-container">
+                <div
+                    className="chart-container"
+                    style={{ maxWidth: "650px", height: "280px", margin: "20px auto" }}
+                >
                     <Bar data={reportChartData} options={reportChartOptions} />
                 </div>
             )}

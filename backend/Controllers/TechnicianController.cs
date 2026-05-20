@@ -108,7 +108,9 @@ namespace backend.Controllers
                     deviceId = d.Id,
                     deviceName = d.DeviceName,
                     complaint = c.Title,
-                    status = c.Status
+                    status = c.Status,
+
+                    date = c.Date   // ✅ ✅ ADD THIS
                 }
             ).ToList();
 

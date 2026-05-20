@@ -111,7 +111,7 @@ function SupervisorDashboard() {
                             <th>Technician</th>
                             <th>Area</th>
                             <th>Consumers</th>
-                            <th>Total</th>
+                            <th>TotalComplaints</th>
                             <th>Pending</th>
                             <th>Resolved</th>
                         </tr>

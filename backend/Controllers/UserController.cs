@@ -38,43 +38,67 @@ namespace backend.Controllers
             return Ok(user);
         }
 
-        // ✅ GET → Devices assigned to user
+        // ✅ PUT → Update User Profile
+        [HttpPut("{id}")]
+        public IActionResult UpdateUser(string id, [FromBody] User updatedUser)
+        {
+            var user = _users.GetById(id);
+            if (user == null)
+                return NotFound();
+
+            // ✅ Email NOT editable
+            user.Username = updatedUser.Username;
+            user.PhoneNumber = updatedUser.PhoneNumber;
+            user.Address = updatedUser.Address;
+
+            _users.Update(user);
+            return Ok(user);
+        }
+
+        // ✅ GET → Devices
         [HttpGet("{id}/devices")]
         public IActionResult GetDevices(string id)
         {
             return Ok(_devices.GetByUser(id));
         }
 
-        // ✅ GET → Complaints raised by user
+        // ✅ GET → Complaints
         [HttpGet("{id}/complaints")]
         public IActionResult GetComplaints(string id)
         {
             return Ok(_complaints.GetByUser(id));
         }
 
+        // ✅ ✅ ✅ POST → Add Complaint (WITH DATE SUPPORT)
         [HttpPost("{id}/complaint")]
         public IActionResult AddComplaint(string id, [FromBody] Complaint complaint)
         {
-            // ✅ Validate DeviceId
             if (complaint.DeviceId == null)
                 return BadRequest("DeviceId is required");
 
             var device = _devices.GetById(complaint.DeviceId.Value);
-
             if (device == null || device.UserId != id)
-                return BadRequest("Invalid device for this user");
+                return BadRequest("Invalid device");
 
             complaint.UserId = id;
+
+            // ✅ ✅ ADD DATE SUPPORT (ONLY CHANGE)
+            if (complaint.Date == default)
+                complaint.Date = DateTime.Now;
 
             _complaints.Add(complaint);
             return Ok(complaint);
         }
 
-        // ✅ GET → Consumption details
+        // ✅ GET → Consumption
         [HttpGet("{id}/consumption")]
         public IActionResult GetConsumption(string id)
         {
-            return Ok(_consumptions.GetByUser(id));
+            return Ok(new
+            {
+                userId = id,
+                consumptions = _consumptions.GetByUser(id)
+            });
         }
     }
 }

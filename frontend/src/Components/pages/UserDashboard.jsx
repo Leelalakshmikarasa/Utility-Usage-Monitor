@@ -24,7 +24,6 @@ ChartJS.register(
 );
 
 function UserDashboard() {
-    // ✅ Get userId from JWT
     const token = localStorage.getItem("token");
     let userId = null;
 
@@ -36,7 +35,6 @@ function UserDashboard() {
 
     const [user, setUser] = useState(null);
 
-    // ✅ Edit profile
     const [editMode, setEditMode] = useState(false);
     const [editData, setEditData] = useState({
         username: "",
@@ -45,18 +43,17 @@ function UserDashboard() {
         address: ""
     });
 
-    // ✅ Data
     const [devices, setDevices] = useState([]);
     const [complaints, setComplaints] = useState([]);
     const [consumption, setConsumption] = useState([]);
 
-    // ✅ Graph controls
     const [selectedDeviceId, setSelectedDeviceId] = useState("");
     const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
 
-    // ✅ Add complaint
+    // ✅ Add complaint states
     const [complaintTitle, setComplaintTitle] = useState("");
     const [complaintDescription, setComplaintDescription] = useState("");
+    const [complaintDate, setComplaintDate] = useState(""); // ✅ NEW
 
     const years = [];
     for (let y = 2020; y <= 2026; y++) years.push(y);
@@ -70,9 +67,14 @@ function UserDashboard() {
             const consumptionRes = await api.get(`/user/${userId}/consumption`);
 
             setUser(userRes.data);
-            setDevices(deviceRes.data);
-            setComplaints(complaintRes.data);
-            setConsumption(consumptionRes.data);
+            setDevices(deviceRes.data || []);
+            setComplaints(complaintRes.data || []);
+
+            setConsumption(
+                Array.isArray(consumptionRes.data)
+                    ? consumptionRes.data
+                    : consumptionRes.data.consumptions || []
+            );
 
             setEditData({
                 username: userRes.data.username,
@@ -92,29 +94,31 @@ function UserDashboard() {
         setEditMode(false);
     };
 
-    // ✅ ADD COMPLAINT
+    // ✅ ADD COMPLAINT (WITH DATE ✅)
     const addComplaint = async () => {
-        if (!selectedDeviceId || !complaintTitle || !complaintDescription) {
-            alert("Select device and enter title & description");
+        if (!selectedDeviceId || !complaintTitle || !complaintDescription || !complaintDate) {
+            alert("Select device, date and enter title & description");
             return;
         }
 
         await api.post(`/user/${userId}/complaint`, {
             deviceId: Number(selectedDeviceId),
             title: complaintTitle,
-            description: complaintDescription
+            description: complaintDescription,
+            date: complaintDate   // ✅ SEND DATE
         });
 
         const res = await api.get(`/user/${userId}/complaints`);
-        setComplaints(res.data);
+        setComplaints(res.data || []);
 
         setComplaintTitle("");
         setComplaintDescription("");
+        setComplaintDate("");
     };
 
     if (!user) return <p>Loading...</p>;
 
-    /* ✅ BUILD RISING LINE GRAPH DATA */
+    // ✅ BUILD LINE GRAPH
     const monthlyUnits = Array(12).fill(0);
 
     consumption.forEach(c => {
@@ -134,34 +138,20 @@ function UserDashboard() {
                 label: "Monthly Consumption (Units)",
                 data: monthlyUnits,
                 borderColor: "#e11d48",
-                backgroundColor: "rgba(225, 29, 72, 0.15)",
-                tension: 0.4,        // ✅ smooth rising curve
+                backgroundColor: "rgba(225,29,72,0.15)",
+                tension: 0.4,
                 fill: true,
                 pointRadius: 5,
-                pointHoverRadius: 7,
                 borderWidth: 3
             }
         ]
-    };
-
-    const lineChartOptions = {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-            y: {
-                beginAtZero: true,
-                ticks: {
-                    callback: val => `${val} units`
-                }
-            }
-        }
     };
 
     return (
         <div className="user-dashboard">
             <h2>User Dashboard</h2>
 
-            {/* ✅ CONSUMER / PROFILE */}
+            {/* ✅ PROFILE */}
             <h3>Consumer Information</h3>
             <p><b>User ID:</b> {user.userId}</p>
 
@@ -175,23 +165,13 @@ function UserDashboard() {
                 </>
             ) : (
                 <>
-                    <input
-                        value={editData.username}
-                        onChange={e => setEditData({ ...editData, username: e.target.value })}
-                    />
-
-                    <input value={editData.email} disabled /> {/* ✅ NOT editable */}
-
-                    <input
-                        value={editData.phoneNumber}
-                        onChange={e => setEditData({ ...editData, phoneNumber: e.target.value })}
-                    />
-
-                    <input
-                        value={editData.address}
-                        onChange={e => setEditData({ ...editData, address: e.target.value })}
-                    />
-
+                    <input value={editData.username}
+                        onChange={e => setEditData({ ...editData, username: e.target.value })} />
+                    <input value={editData.email} disabled />
+                    <input value={editData.phoneNumber}
+                        onChange={e => setEditData({ ...editData, phoneNumber: e.target.value })} />
+                    <input value={editData.address}
+                        onChange={e => setEditData({ ...editData, address: e.target.value })} />
                     <button onClick={saveProfile}>Save</button>
                     <button onClick={() => setEditMode(false)}>Cancel</button>
                 </>
@@ -199,9 +179,8 @@ function UserDashboard() {
 
             <hr />
 
-            {/* ✅ DEVICE USAGE – RISING LINE GRAPH */}
+            {/* ✅ DEVICE USAGE */}
             <h3>Device Usage</h3>
-
             <select value={selectedDeviceId} onChange={e => setSelectedDeviceId(e.target.value)}>
                 <option value="">Select Device</option>
                 {devices.map(d => (
@@ -217,13 +196,13 @@ function UserDashboard() {
 
             {selectedDeviceId && (
                 <div className="chart-container" style={{ height: "350px" }}>
-                    <Line data={lineChartData} options={lineChartOptions} />
+                    <Line data={lineChartData} />
                 </div>
             )}
 
             <hr />
 
-            {/* ✅ ALL COMPLAINTS */}
+            {/* ✅ COMPLAINTS WITH DATE COLUMN */}
             <h3>My Complaints</h3>
             <table>
                 <thead>
@@ -231,6 +210,7 @@ function UserDashboard() {
                         <th>Device</th>
                         <th>Complaint</th>
                         <th>Status</th>
+                        <th>Date</th> {/* ✅ NEW */}
                     </tr>
                 </thead>
                 <tbody>
@@ -239,6 +219,7 @@ function UserDashboard() {
                             <td>{devices.find(d => d.id === c.deviceId)?.deviceName}</td>
                             <td>{c.title}</td>
                             <td>{c.status}</td>
+                            <td>{new Date(c.date).toLocaleDateString()}</td> {/* ✅ */}
                         </tr>
                     ))}
                 </tbody>
@@ -246,7 +227,7 @@ function UserDashboard() {
 
             <hr />
 
-            {/* ✅ ADD COMPLAINT */}
+            {/* ✅ ADD COMPLAINT WITH DATE */}
             <h3>Add Complaint</h3>
 
             <select value={selectedDeviceId} onChange={e => setSelectedDeviceId(e.target.value)}>
@@ -255,6 +236,12 @@ function UserDashboard() {
                     <option key={d.id} value={d.id}>{d.deviceName}</option>
                 ))}
             </select>
+
+            <input
+                type="date"
+                value={complaintDate}
+                onChange={e => setComplaintDate(e.target.value)}
+            />
 
             <input
                 placeholder="Complaint Title"

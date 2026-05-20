@@ -14,7 +14,10 @@ namespace backend.Models
 
         // ✅ Foreign Keys
         public string UserId { get; set; } = "";
-        public int? DeviceId { get; set; }   
+        public int? DeviceId { get; set; }
+
+        public DateTime Date { get; set; }
+  
 
         // ✅ Navigation
         [JsonIgnore]
