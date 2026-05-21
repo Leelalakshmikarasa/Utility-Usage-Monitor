@@ -1,0 +1,11 @@
+Files found:
+- backend\Repos\IConsumptionRepository.cs
+- backend\Repos\EFConsumptionRepository.cs
+- backend\Repos\IComplaintRepository.cs
+- backend\Repos\EFComplaintRepository.cs
+- backend\Repos\IDeviceRepository.cs
+- backend\Repos\EFDeviceRepository.cs
+- backend\Repos\IUserRepository.cs
+- backend\Repos\EFUserRepository.cs
+
+Next steps: use edit_file or apply_patch to inspect repository files if you want detailed checks.

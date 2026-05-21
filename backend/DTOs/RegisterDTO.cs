@@ -32,7 +32,7 @@ namespace backend.DTOs
         public string PhoneNumber { get; set; } = "";
 
         [Required]
-        [MinLength(5)]
+        [MinLength(3)]
         public string Address { get; set; } = "";
     }
 }

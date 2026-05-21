@@ -88,19 +88,7 @@ namespace backend.Controllers
         [HttpGet("consumptions/by-address")]
         public IActionResult GetTotalConsumptionByAddress()
         {
-            var data = _context.Consumptions
-                .Join(_context.Users,
-                      c => c.UserId,
-                      u => u.UserId,
-                      (c, u) => new { c, u })
-                .GroupBy(x => x.u.Address)
-                .Select(g => new
-                {
-                    Address = g.Key,
-                    TotalUsage = g.Sum(x => x.c.Units)
-                })
-                .ToList();
-
+            var data = _consumption.GetTotalByAddress();
             return Ok(data);
         }
     }

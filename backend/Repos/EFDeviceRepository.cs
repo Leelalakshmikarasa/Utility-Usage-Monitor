@@ -1,6 +1,6 @@
 using backend.Data;
 using backend.Models;
-using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace backend.Repos
 {
@@ -13,37 +13,32 @@ namespace backend.Repos
             _context = context;
         }
 
-        public List<UtilityDevice> GetByUser(string userId)
+        public IQueryable<UtilityDevice> GetAll()
         {
-            return _context.Devices
-                .Where(d => d.UserId == userId)
-                .ToList();
+            return _context.Devices;
         }
 
-        public List<UtilityDevice> GetAll()
-        {
-            return _context.Devices.ToList();
-        }
-
-        // ✅ ADD THIS
-        public UtilityDevice? GetById(int id)
+        public UtilityDevice GetById(int id)
         {
             return _context.Devices.FirstOrDefault(d => d.Id == id);
         }
 
         public void Add(UtilityDevice device)
         {
-            try
-            {
-                _context.Devices.Add(device);
-                _context.SaveChanges();
-            }
-            catch (DbUpdateException)
-            {
-                throw new InvalidOperationException(
-                    "Device name already exists. Please choose a unique device name."
-                );
-            }
+            _context.Devices.Add(device);
+            _context.SaveChanges();
+        }
+
+        public void Update(UtilityDevice device)
+        {
+            _context.Devices.Update(device);
+            _context.SaveChanges();
+        }
+
+        public void Delete(UtilityDevice device)
+        {
+            _context.Devices.Remove(device);
+            _context.SaveChanges();
         }
     }
 }

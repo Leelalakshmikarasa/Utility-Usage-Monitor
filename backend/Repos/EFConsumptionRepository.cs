@@ -1,7 +1,6 @@
 using backend.Data;
 using backend.Models;
-using backend.DTOs;
-using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace backend.Repos
 {
@@ -14,40 +13,32 @@ namespace backend.Repos
             _context = context;
         }
 
-        public List<UtilityConsumption> GetAll()
+        public IQueryable<UtilityConsumption> GetAll()
         {
-            return _context.Consumptions.ToList();
+            return _context.Consumptions;
         }
 
-        public List<UtilityConsumption> GetByUser(string userId)
+        public UtilityConsumption GetById(int id)
         {
-            return _context.Consumptions
-                .Where(c => c.UserId == userId)
-                .ToList();
+            return _context.Consumptions.FirstOrDefault(c => c.Id == id);
         }
 
-        // ✅ ADD THIS METHOD (Missing one causing error)
-        public List<UtilityConsumption> GetByAddress(string address)
+        public void Add(UtilityConsumption consumption)
         {
-            return _context.Consumptions
-                .Include(c => c.User)
-                .Include(c => c.UtilityDevice)
-                .Where(c => c.User.Address.ToLower() == address.ToLower())
-                .ToList();
-        }
- 
-        // ✅ Your existing method (Correct)
-        public List<ConsumptionByAddressDTO> GetTotalByAddress()
-        {
-            return (from c in _context.Consumptions
-                    join u in _context.Users on c.UserId equals u.UserId
-                    group c by u.Address into g
-                    select new ConsumptionByAddressDTO
-                    {
-                        Address = g.Key,
-                        TotalUsage = g.Sum(x => x.Units)
-                    }).ToList();
+            _context.Consumptions.Add(consumption);
+            _context.SaveChanges();
         }
 
+        public void Update(UtilityConsumption consumption)
+        {
+            _context.Consumptions.Update(consumption);
+            _context.SaveChanges();
+        }
+
+        public void Delete(UtilityConsumption consumption)
+        {
+            _context.Consumptions.Remove(consumption);
+            _context.SaveChanges();
+        }
     }
 }

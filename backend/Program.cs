@@ -15,12 +15,13 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     ));
 
 //  Services
-builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<IUserRepository, EFUserRepository>();
 builder.Services.AddScoped<IComplaintRepository, EFComplaintRepository>();
 builder.Services.AddScoped<IDeviceRepository, EFDeviceRepository>();
 builder.Services.AddScoped<IConsumptionRepository, EFConsumptionRepository>();
 
+// Auth service registration
+builder.Services.AddSingleton<AuthService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

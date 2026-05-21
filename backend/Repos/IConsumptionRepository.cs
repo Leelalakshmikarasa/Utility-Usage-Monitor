@@ -1,17 +1,14 @@
+using System.Linq;
 using backend.Models;
-using backend.DTOs;
 
 namespace backend.Repos
 {
     public interface IConsumptionRepository
     {
-        List<UtilityConsumption> GetByUser(string userId);
-        List<UtilityConsumption> GetAll();
-         List<UtilityConsumption> GetByAddress(string address);
-        List<ConsumptionByAddressDTO> GetTotalByAddress();
+        IQueryable<UtilityConsumption> GetAll();
+        UtilityConsumption GetById(int id);
+        void Add(UtilityConsumption consumption);
+        void Update(UtilityConsumption consumption);
+        void Delete(UtilityConsumption consumption);
     }
-
-
-
-    
 }

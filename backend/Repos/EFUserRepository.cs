@@ -1,5 +1,6 @@
 using backend.Data;
 using backend.Models;
+using System.Linq;
 
 namespace backend.Repos
 {
@@ -12,13 +13,26 @@ namespace backend.Repos
             _context = context;
         }
 
-        public List<User> GetAll() => _context.Users.ToList();
+        public IQueryable<User> GetAll()
+        {
+            return _context.Users;
+        }
 
-        public User? GetById(string id) =>
-            _context.Users.FirstOrDefault(x => x.UserId == id);
+        public User GetById(string id)
+        {
+            return _context.Users.FirstOrDefault(u => u.UserId == id);
+        }
 
-        public List<User> GetByRole(RoleType role) =>
-            _context.Users.Where(x => x.Role == role).ToList();
+        public User GetByUserName(string username)
+        {
+            return _context.Users.FirstOrDefault(u => u.Username == username);
+        }
+
+        public void Add(User user)
+        {
+            _context.Users.Add(user);
+            _context.SaveChanges();
+        }
 
         public void Update(User user)
         {
@@ -26,16 +40,10 @@ namespace backend.Repos
             _context.SaveChanges();
         }
 
-        public void Delete(string id)
-{
-    var user = _context.Users.FirstOrDefault(u => u.UserId == id);
-
-    if (user != null)
-    {
-        _context.Users.Remove(user);
-        _context.SaveChanges();
-    }
-}
-
+        public void Delete(User user)
+        {
+            _context.Users.Remove(user);
+            _context.SaveChanges();
+        }
     }
 }
