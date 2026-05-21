@@ -10,6 +10,6 @@ namespace backend.Repos
         User GetByUserName(string username);
         void Add(User user);
         void Update(User user);
-        void Delete(User user);
+        void Delete(string id);
     }
 }

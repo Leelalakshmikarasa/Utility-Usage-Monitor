@@ -18,6 +18,11 @@ namespace backend.Repos
             return _context.Devices;
         }
 
+        public IQueryable<UtilityDevice> GetByUser(string userId)
+        {
+            return _context.Devices.Where(d => d.UserId == userId);
+        }
+
         public UtilityDevice GetById(int id)
         {
             return _context.Devices.FirstOrDefault(d => d.Id == id);

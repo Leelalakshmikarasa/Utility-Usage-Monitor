@@ -40,8 +40,10 @@ namespace backend.Repos
             _context.SaveChanges();
         }
 
-        public void Delete(User user)
+        public void Delete(string id)
         {
+            var user = _context.Users.FirstOrDefault(u => u.UserId == id);
+            if (user == null) return;
             _context.Users.Remove(user);
             _context.SaveChanges();
         }

@@ -6,6 +6,7 @@ namespace backend.Repos
     public interface IComplaintRepository
     {
         IQueryable<Complaint> GetAll();
+        IQueryable<Complaint> GetByUser(string userId);
         IQueryable<Complaint> GetByUserAndDevice(string userId, int deviceId);
         Complaint GetById(int id);
         void Add(Complaint complaint);

@@ -18,6 +18,11 @@ namespace backend.Repos
             return _context.Complaints;
         }
 
+        public IQueryable<Complaint> GetByUser(string userId)
+        {
+            return _context.Complaints.Where(c => c.UserId == userId);
+        }
+
         public IQueryable<Complaint> GetByUserAndDevice(string userId, int deviceId)
         {
             return _context.Complaints.Where(c => c.UserId == userId && c.DeviceId == deviceId);
