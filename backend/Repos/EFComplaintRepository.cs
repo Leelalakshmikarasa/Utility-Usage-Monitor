@@ -1,5 +1,6 @@
 using backend.Data;
 using backend.Models;
+using System.Linq;
 
 namespace backend.Repos
 {
@@ -12,24 +13,19 @@ namespace backend.Repos
             _context = context;
         }
 
-        public List<Complaint> GetAll()
+        public IQueryable<Complaint> GetAll()
         {
-            return _context.Complaints.ToList();
+            return _context.Complaints;
         }
 
-        public List<Complaint> GetByUser(string userId)
+        public IQueryable<Complaint> GetByUserAndDevice(string userId, int deviceId)
         {
-            return _context.Complaints
-                .Where(c => c.UserId == userId)
-                .ToList();
+            return _context.Complaints.Where(c => c.UserId == userId && c.DeviceId == deviceId);
         }
 
-        // ✅ NEW METHOD
-        public List<Complaint> GetByUserAndDevice(string userId, int deviceId)
+        public Complaint GetById(int id)
         {
-            return _context.Complaints
-                .Where(c => c.UserId == userId && c.DeviceId == deviceId)
-                .ToList();
+            return _context.Complaints.FirstOrDefault(c => c.Id == id);
         }
 
         public void Add(Complaint complaint)
@@ -41,6 +37,12 @@ namespace backend.Repos
         public void Update(Complaint complaint)
         {
             _context.Complaints.Update(complaint);
+            _context.SaveChanges();
+        }
+
+        public void Delete(Complaint complaint)
+        {
+            _context.Complaints.Remove(complaint);
             _context.SaveChanges();
         }
     }

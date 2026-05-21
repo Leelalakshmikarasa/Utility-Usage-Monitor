@@ -1,15 +1,14 @@
 using backend.Models;
+using System.Linq;
 
 namespace backend.Repos
 {
     public interface IDeviceRepository
     {
+        IQueryable<UtilityDevice> GetAll();
+        UtilityDevice GetById(int id);
         void Add(UtilityDevice device);
-
-        List<UtilityDevice> GetAll();
-
-        List<UtilityDevice> GetByUser(string userId);
-
-        UtilityDevice? GetById(int id);
+        void Update(UtilityDevice device);
+        void Delete(UtilityDevice device);
     }
-}
+}}

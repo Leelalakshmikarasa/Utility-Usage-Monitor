@@ -1,56 +1,50 @@
 using Microsoft.AspNetCore.Mvc;
 using backend.Repos;
 using backend.DTOs;
+using backend.Models;
 
 namespace backend.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/auth")]
     public class AuthController : ControllerBase
     {
-        private readonly AuthService _service;
+        private readonly IUserRepository _users;
+        private readonly AuthService _authService;
 
-        public AuthController(AuthService service)
+        public AuthController(IUserRepository users, AuthService authService)
         {
-            _service = service;
+            _users = users;
+            _authService = authService;
         }
 
         [HttpPost("register")]
         public IActionResult Register(RegisterDTO dto)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+            var existing = _users.GetByUserName(dto.Username);
+            if (existing != null)
+                return BadRequest("Username already exists");
 
-            try
+            var user = new User
             {
-                var user = _service.Register(dto);
-                return Ok(new
-                {
-                    user.Id,
-                    user.UserId,
-                    user.Username,
-                    user.Email,
-                    user.Role,
-                    user.PhoneNumber,
-                    user.Address
-                });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+                UserId = System.Guid.NewGuid().ToString(),
+                Username = dto.Username,
+                Password = dto.Password,
+                Role = dto.Role,
+                Address = dto.Address
+            };
+
+            _users.Add(user);
+            return Ok(user);
         }
 
         [HttpPost("login")]
         public IActionResult Login(LoginDTO dto)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+            var user = _users.GetByUserName(dto.Username);
+            if (user == null) return Unauthorized();
 
-            var token = _service.Login(dto);
-            if (token == null)
-                return Unauthorized("Invalid credentials");
-
+            var token = _authService.GenerateToken(user);
             return Ok(new { token });
         }
     }

@@ -1,91 +1,60 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using backend.Repos;
 using backend.Models;
-using backend.Data;
-using backend.DTOs;
-using Microsoft.EntityFrameworkCore;
 
 namespace backend.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/consumption")]
     [Authorize]
     public class ConsumptionController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly IConsumptionRepository _consumption;
+        private readonly IDeviceRepository _devices;
 
-        public ConsumptionController(AppDbContext context)
+        public ConsumptionController(IConsumptionRepository consumption, IDeviceRepository devices)
         {
-            _context = context;
+            _consumption = consumption;
+            _devices = devices;
         }
 
-        // ✅ POST → Add consumption with custom date
-        [HttpPost]
-        public IActionResult AddConsumption(ConsumptionDTO dto)
+        [HttpGet]
+        public IActionResult GetAll()
         {
-            // ✅ Check user exists
-            if (!_context.Users.Any(u => u.UserId == dto.UserId))
-                return BadRequest("User does not exist");
+            var consumptions = _consumption.GetAll().ToList();
+            return Ok(consumptions);
+        }
 
-            // ✅ Check device belongs to user
-            var device = _context.Devices.FirstOrDefault(d =>
-                d.Id == dto.UtilityDeviceId && d.UserId == dto.UserId);
+        [HttpGet("{id}")]
+        public IActionResult GetById(int id)
+        {
+            var c = _consumption.GetById(id);
+            if (c == null) return NotFound();
+            return Ok(c);
+        }
 
-            if (device == null)
-                return BadRequest("Invalid device for this user");
-
-            // ✅ Convert custom date → DateTime
-            DateTime date;
-            try
-            {
-                date = new DateTime(dto.Year, dto.Month, dto.Day);
-            }
-            catch
-            {
-                return BadRequest("Invalid date");
-            }
-
-            var consumption = new UtilityConsumption
-            {
-                Units = dto.Units,
-                Cost = dto.Cost == 0 ? dto.Units * 10 : dto.Cost,
-                Date = date,
-                UserId = dto.UserId,
-                UtilityDeviceId = dto.UtilityDeviceId
-            };
-
-            _context.Consumptions.Add(consumption);
-            _context.SaveChanges();
-
+        [HttpPost]
+        public IActionResult Add(UtilityConsumption consumption)
+        {
+            _consumption.Add(consumption);
             return Ok(consumption);
         }
 
-        // ✅ GET → User consumptions (custom date output)
-        [HttpGet("{userId}")]
-        public IActionResult GetByUser(string userId)
+        [HttpPut]
+        public IActionResult Update(UtilityConsumption consumption)
         {
-            var data = _context.Consumptions
-                .Include(c => c.UtilityDevice)
-                .Where(c => c.UserId == userId)
-                .Select(c => new
-                {
-                    c.Id,
-                    c.Units,
-                    c.Cost,
+            _consumption.Update(consumption);
+            return Ok(consumption);
+        }
 
-                    // ✅ Custom date output format
-                    Date = new
-                    {
-                        Day = c.Date.Day,
-                        Month = c.Date.Month,
-                        Year = c.Date.Year
-                    },
-
-                    DeviceName = c.UtilityDevice!.DeviceName
-                })
-                .ToList();
-
-            return Ok(data);
+        [HttpDelete("{id}")]
+        public IActionResult Delete(int id)
+        {
+            var c = _consumption.GetById(id);
+            if (c == null) return NotFound();
+            _consumption.Delete(c);
+            return Ok();
         }
     }
 }

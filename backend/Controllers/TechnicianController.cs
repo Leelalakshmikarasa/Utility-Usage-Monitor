@@ -64,22 +64,24 @@ namespace backend.Controllers
 
                 devices = _context.Devices
                     .Where(d => d.UserId == c.UserId)
-                    .Select(d => new
-                    {
-                        deviceId = d.Id,
-                        deviceName = d.DeviceName,
-
-                        consumptions = _context.Consumptions
-                            .Where(cs => cs.UtilityDeviceId == d.Id)
-                            .Select(cs => new
-                            {
-                                month = cs.Date.Month,
-                                year = cs.Date.Year,
-                                units = cs.Units,
-                                cost = cs.Cost
-                            })
-                            .ToList()
-                    })
+                    .GroupJoin(
+                        _context.Consumptions,
+                        d => d.Id,
+                        cs => cs.UtilityDeviceId,
+                        (d, csGroup) => new
+                        {
+                            deviceId = d.Id,
+                            deviceName = d.DeviceName,
+                            consumptions = csGroup
+                                .Select(cs => new
+                                {
+                                    month = cs.Date.Month,
+                                    year = cs.Date.Year,
+                                    units = cs.Units,
+                                    cost = cs.Cost
+                                })
+                                .ToList()
+                        })
                     .ToList()
             }).ToList();
 

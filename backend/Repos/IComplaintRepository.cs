@@ -1,18 +1,15 @@
+using System.Linq;
 using backend.Models;
 
 namespace backend.Repos
 {
     public interface IComplaintRepository
     {
-        List<Complaint> GetAll();
-
-        List<Complaint> GetByUser(string userId);
-
-        // ✅ ADD THIS (IMPORTANT)
-        List<Complaint> GetByUserAndDevice(string userId, int deviceId);
-
+        IQueryable<Complaint> GetAll();
+        IQueryable<Complaint> GetByUserAndDevice(string userId, int deviceId);
+        Complaint GetById(int id);
         void Add(Complaint complaint);
-
         void Update(Complaint complaint);
+        void Delete(Complaint complaint);
     }
 }
