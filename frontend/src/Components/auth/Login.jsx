@@ -80,7 +80,7 @@ function Login() {
             <p>
                 Don’t have an account?{" "}
                 <span style={{ color: "blue", cursor: "pointer" }} onClick={() => navigate("/register")}>
-                    Register here
+                    Register here login
                 </span>
             </p>
         </div>
