@@ -1,108 +1,155 @@
-/* PAGE BACKGROUND */
-body {
-    background-color: #f4f6f9;
+/* ================= GLOBAL ================= */
+* {
+    box-sizing: border-box;
+    font-family: "Segoe UI", sans-serif;
 }
 
-/* MAIN CONTAINER */
+body {
+    background: linear-gradient(135deg, #eef2ff 0%, #ffffff 100%);
+}
+
+/* ================= MAIN CONTAINER ================= */
+.dashboard-container,
 .user-dashboard {
     max-width: 1100px;
     margin: 30px auto;
     padding: 25px;
-    font-family: "Segoe UI", Tahoma, sans-serif;
-    background-color: #ffffff;
-    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+}
+
+/* ================= HEADINGS ================= */
+h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #0d1333;
+}
+
+h3 {
+    margin-top: 25px;
+    margin-bottom: 12px;
+    color: #374151;
+}
+
+/* ================= TEXT ================= */
+p {
+    font-size: 14px;
+    color: #4b5563;
+}
+
+/* ================= INPUTS ================= */
+input,
+select,
+textarea {
+    padding: 10px 12px;
+    margin: 6px 8px 12px 0;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    background: #f9fafb;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+        outline: none;
+        border-color: #3b82f6;
+        background: #ffffff;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+    }
+
+/* ================= BUTTON ================= */
+button {
+    padding: 10px 18px;
+    border-radius: 12px;
+    border: none;
+    color: white;
+    font-weight: 500;
+    cursor: pointer;
+    background: linear-gradient(135deg, #2563eb, #3b82f6);
+    transition: all 0.3s ease;
+}
+
+    button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(37, 99, 235, 0.35);
+    }
+
+/* ================= CARD ================= */
+.card {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    margin: 20px 0;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+}
+
+/* ================= TABLE ================= */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+}
+
+thead {
+    background: linear-gradient(135deg, #2563eb, #60a5fa);
+    color: white;
+}
+
+th,
+td {
+    padding: 12px;
+    text-align: center;
+    font-size: 14px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #f3f4f6;
+}
+
+tbody tr:hover {
+    background-color: #e0e7ff;
+}
+
+/* ================= STATUS COLORS ================= */
+.warning {
+    color: #f59e0b;
+    font-weight: 600;
+}
+
+.success {
+    color: #10b981;
+    font-weight: 600;
+}
+
+/* ================= CHART BOX ================= */
+.chart-container,
+.chart-box {
+    background: white;
+    padding: 20px;
+    margin-top: 20px;
+    border-radius: 16px;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
 }
 
-    /* HEADINGS */
-    .user-dashboard h2 {
-        text-align: center;
-        color: #1f2937;
-        margin-bottom: 25px;
-    }
+/* ================= HR ================= */
+hr {
+    margin: 30px 0;
+    border: none;
+    height: 1px;
+    background: #e5e7eb;
+}
 
-    .user-dashboard h3 {
-        color: #374151;
-        margin-top: 25px;
-        margin-bottom: 10px;
-    }
-
-    /* TEXT */
-    .user-dashboard p {
-        font-size: 14px;
-        color: #374151;
-    }
-
-    /* BUTTONS */
-    .user-dashboard button {
-        background-color: #6366f1;
-        color: white;
-        border: none;
-        padding: 8px 16px;
-        margin-right: 8px;
-        border-radius: 6px;
-        font-size: 14px;
-        cursor: pointer;
-    }
-
-        .user-dashboard button:hover {
-            background-color: #4f46e5;
-        }
-
-    /* INPUTS, SELECT, TEXTAREA */
-    .user-dashboard input,
-    .user-dashboard select,
-    .user-dashboard textarea {
-        padding: 8px 10px;
-        border: 1px solid #d1d5db;
-        border-radius: 6px;
-        font-size: 14px;
-        margin-right: 6px;
-        margin-bottom: 8px;
-    }
-
-    .user-dashboard textarea {
-        width: 100%;
-        min-height: 70px;
-        resize: vertical;
-    }
-
-    /* TABLE STYLING */
-    .user-dashboard table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 12px;
-        background-color: #ffffff;
-        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.06);
-        border-radius: 10px;
-        overflow: hidden;
-    }
-
-    .user-dashboard thead {
-        background-color: #6366f1;
-        color: white;
-    }
-
-    .user-dashboard th,
-    .user-dashboard td {
-        padding: 12px;
-        text-align: center;
-        border-bottom: 1px solid #e5e7eb;
-        font-size: 14px;
-    }
-
-    .user-dashboard tbody tr:hover {
-        background-color: #eef2ff;
-    }
-
-    /* ACTION SECTIONS */
-    .user-dashboard hr {
-        margin: 30px 0;
-    }
-
-    /* EMPTY STATE */
-    .user-dashboard td[colspan] {
-        text-align: center;
-        font-style: italic;
-        color: #9ca3af;
-    }
+/* ================= NO DATA ================= */
+.no-data {
+    text-align: center;
+    color: #9ca3af;
+    font-style: italic;
+}

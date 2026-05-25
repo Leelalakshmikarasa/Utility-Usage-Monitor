@@ -13,7 +13,7 @@ import {
 } from "chart.js";
 
 // ✅ Import CSS
-import "./SupervisorDashboard.css";
+import "./UserDashboard.css";
 
 // ✅ Register chart components
 ChartJS.register(

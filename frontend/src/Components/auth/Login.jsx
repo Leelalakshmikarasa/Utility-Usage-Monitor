@@ -19,8 +19,6 @@ import {
 
     BarChart3,
 
-    Gauge,
-
 } from "lucide-react";
 
 function Login() {

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import api from "../../api";
-import "./TechnicianDashboard.css";
+import "./UserDashboard.css";
 
 // ✅ Chart imports
 import { Bar } from "react-chartjs-2";
