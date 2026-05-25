@@ -4,7 +4,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 12px 25px;
-    background-color: #1f2937; /* dark gray */
+    background: linear-gradient(135deg, #2563eb, #60a5fa);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
@@ -35,7 +35,7 @@
 
     /* HOVER EFFECT */
     .nav-link:hover {
-        background-color: #374151;
+        background: linear-gradient(139deg, #2569eb, #60a5fa);
         color: #ffffff;
     }
 

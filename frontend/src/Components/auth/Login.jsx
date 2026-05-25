@@ -1,28 +1,67 @@
 import React, { useState } from "react";
 
+import "./Login.css";
+
 import { useNavigate } from "react-router-dom";
+import Navbar from "../common/Navbar";
 
 import api from "../../api";
 
-import "./Login.css";
+import {
+
+    User,
+
+    Lock,
+
+    Eye,
+
+    Zap,
+
+    BarChart3,
+
+    Gauge,
+
+} from "lucide-react";
 
 function Login() {
 
-    const [form, setForm] = useState({ email: "", password: "" });
+    const [form, setForm] = useState({
+
+        email: "",
+
+        password: "",
+
+    });
+
+    const [showPassword, setShowPassword] = useState(false);
 
     const [message, setMessage] = useState("");
 
     const navigate = useNavigate();
 
-    const handleChange = (e) =>
+    // ✅ Handle input change
 
-        setForm({ ...form, [e.target.name]: e.target.value });
+    const handleChange = (e) => {
 
-    const submit = async (e) => {
+        setForm({
+
+            ...form,
+
+            [e.target.name]: e.target.value,
+
+        });
+
+    };
+
+    // ✅ Handle login submit
+
+    const handleSubmit = async (e) => {
 
         e.preventDefault();
 
         setMessage("");
+
+        console.log("Submitting:", form);
 
         try {
 
@@ -30,11 +69,7 @@ function Login() {
 
             const token =
 
-                typeof res.data === "string"
-
-                    ? res.data
-
-                    : res.data.token;
+                typeof res.data === "string" ? res.data : res.data.token;
 
             if (!token) {
 
@@ -54,7 +89,11 @@ function Login() {
 
             const role =
 
-                payload["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+                payload[
+
+                "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
+
+                ];
 
             setMessage("✅ Login successful");
 
@@ -68,50 +107,202 @@ function Login() {
 
         } catch (err) {
 
-            setMessage(err.response?.data || "Server error");
+            console.error(err);
+
+            setMessage(err.response?.data || "Login failed");
 
         }
 
     };
 
     return (
-        <div className="auth-container">
-            <h2>Login</h2>
+        <>
+        <Navbar/>
+        <div className="container">
 
-            <form onSubmit={submit}>
+            {/* LEFT SECTION */}
+            <div className="left-section">
 
-                <div>
-                    <label>Email</label><br />
-                    <input name="email" type="email" onChange={handleChange} required />
+                <div className="icon-box">
+                    <Zap className="zap-icon" />
                 </div>
 
-                <br />
+                <h1>Welcome Back</h1>
+                <p className="subtitle">
 
-                <div>
-                    <label>Password</label><br />
-                    <input name="password" type="password" onChange={handleChange} required />
+                    Login to your Utility Management System
+                </p>
+
+                {/* ✅ FORM START */}
+                <form onSubmit={handleSubmit}>
+
+                    {/* EMAIL */}
+                    <div className="input-box">
+                        <User className="input-icon" />
+
+                        <input
+
+                            name="email"
+
+                            type="email"
+
+                            placeholder="Enter Email"
+
+                            value={form.email}
+
+                            onChange={handleChange}
+
+                            required
+
+                        />
+                    </div>
+
+                    {/* PASSWORD */}
+                    <div className="input-box">
+                        <Lock className="input-icon" />
+
+                        <input
+
+                            name="password"
+
+                            type={showPassword ? "text" : "password"}
+
+                            placeholder="Password"
+
+                            value={form.password}
+
+                            onChange={handleChange}
+
+                            required
+
+                        />
+
+                        <Eye
+
+                            className="input-icon eye"
+
+                            onClick={() => setShowPassword(!showPassword)}
+
+                        />
+                    </div>
+
+                    {/* OPTIONS 
+                    <div className="options">
+                        <label>
+                            <input type="checkbox" /> Remember me
+                        </label>
+                        <span className="forgot">Forgot password?</span>
+                    </div>*/}
+
+                    {/* ✅ IMPORTANT FIX */}
+                    <button type="submit" className="login-btn">
+
+                        Login
+                    </button>
+
+                </form>
+
+                {/* ✅ FORM END */}
+
+                {/* MESSAGE */}
+
+                {message && <p className="message">{message}</p>}
+
+                {/* DIVIDER */}
+                <div className="divider">
+                    <div className="line"></div>
+                    <span>or</span>
+                    <div className="line"></div>
                 </div>
 
-                <br />
+                {/* SIGNUP */}
+                <p className="signup-text">
 
-                <button type="submit">Login</button>
+                    Don't have an account?{" "}
+                    <span onClick={() => navigate("/register")}>
 
-            </form>
+                        Sign up
+                    </span>
+                </p>
+            </div>
 
-            <br />
+            {/* RIGHT SECTION */}
+            <div className="right-section">
+                <div className="content">
 
-            {message && <p>{message}</p>}
+                    <h3>Monitor Your Electricity Consumption</h3>
+                    <p>
 
-            {/* ✅ Navigation */}
-            <p>
+                        Track usage, analyze trends and manage your Consumptions.
+                    </p>
 
-                Don’t have an account?{" "}
-                <span style={{ color: "blue", cursor: "pointer" }} onClick={() => navigate("/register")}>
+                    {/* DASHBOARD */}
+                    <div className="dashboard-card">
 
-                    Register here
-                </span>
-            </p>
-        </div>
+                        <div className="top-bar">
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                        </div>
+
+                        <div className="graph">
+                            <div className="bar bar1"></div>
+                            <div className="bar bar2"></div>
+                            <div className="bar bar3"></div>
+                            <div className="bar bar4"></div>
+                            <div className="bar bar5"></div>
+                            <div className="bar bar6"></div>
+                            <div className="bar bar7"></div>
+                        </div>
+
+                        <div className="stats">
+                            {/* <div className="stat-box">
+                                <Zap className="stat-icon" />
+                                <h3>230 V</h3>
+                                <p>Voltage</p>
+                            </div>*/}
+
+                            <div className="stat-box">
+                                <BarChart3 className="stat-icon" />
+                                <h3>1200</h3>
+                                <p>kWh Usage</p>
+                            </div>
+
+                            {/*<div className="stat-box">
+                                <Gauge className="stat-icon" />
+                                <h3>82%</h3>
+                                <p>Efficiency</p>
+                            </div>*/}
+                        </div>
+                    </div>
+
+                    {/* METER */}
+                    <div className="meter">
+                        <div className="meter-inner">
+                            <Zap className="meter-icon" />
+                            <div className="meter-display">1287.45</div>
+                            <p>kWh</p>
+
+                            <div className="meter-line">
+                                <div className="meter-fill"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* TOWER */}
+                    <img
+
+                        src="https://cdn-icons-png.flaticon.com/512/2942/2942813.png"
+
+                        alt="tower"
+
+                        className="tower"
+
+                    />
+                </div>
+            </div>
+            </div>
+        </>
 
     );
 

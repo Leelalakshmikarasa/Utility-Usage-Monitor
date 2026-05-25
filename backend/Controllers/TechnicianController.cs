@@ -56,7 +56,7 @@ namespace backend.Controllers
             var result = consumers.Select(c => new
             {
                 userId = c.UserId,
-                username = c.Username,          // ✅ FIXED
+                username = c.Username,          
                 address = c.Address,
 
                 totalDevices = _context.Devices
@@ -112,7 +112,7 @@ namespace backend.Controllers
                     complaint = c.Title,
                     status = c.Status,
 
-                    date = c.Date   // ✅ ✅ ADD THIS
+                    date = c.Date  
                 }
             ).ToList();
 

@@ -1,38 +1,228 @@
-.App {
-  text-align: center;
+/* RESET */
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: "Segoe UI", sans-serif;
+    background: linear-gradient(135deg, #f4f6fb, #eef2ff);
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+/* MAIN CONTAINER */
+
+.login-container {
+    display: flex;
+    min-height: 90vh;
+    margin: 20px;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.12);
+    background: white;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+/* ✅ LEFT SIDE (BIGGER) */
+
+.login-box {
+    flex: 1.3; /* ✅ increased width */
+
+    background: rgba(233, 238, 245, 0.8);
+    backdrop-filter: blur(10px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 60px;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+    .login-box h2 {
+        margin-bottom: 20px;
+        color: #1f2937;
+        font-size: 26px;
+    }
+
+    /* INPUTS */
+
+    .login-box input {
+        padding: 14px;
+        margin: 10px 0;
+        border: none;
+        border-radius: 12px;
+        background: #ffffff;
+        font-size: 14px;
+        transition: 0.25s;
+    }
+
+        .login-box input:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(45, 91, 255, 0.2);
+        }
+
+/* OPTIONS */
+
+.options {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    margin-top: 10px;
+    align-items: center;
 }
 
-.App-link {
-  color: #61dafb;
+.forgot {
+    color: #2d5bff;
+    cursor: pointer;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+    .forgot:hover {
+        text-decoration: underline;
+    }
+
+/* BUTTON */
+
+.login-box button {
+    margin-top: 20px;
+    padding: 14px;
+    border: none;
+    background: linear-gradient(135deg, #2d5bff, #1a3cff);
+    color: white;
+    border-radius: 12px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+    .login-box button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(45, 91, 255, 0.4);
+    }
+
+/* MESSAGE */
+
+.message {
+    text-align: center;
+    margin-top: 12px;
+    font-size: 14px;
+}
+
+/* REGISTER */
+
+.register-text {
+    text-align: center;
+    margin-top: 15px;
+}
+
+    .register-text span {
+        color: #2d5bff;
+        cursor: pointer;
+    }
+
+        .register-text span:hover {
+            text-decoration: underline;
+        }
+
+/* ✅ RIGHT SIDE (GRAPH SMALLER) */
+
+.graph-section {
+    flex: 1; /* ✅ smaller */
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #ffffff, #f8fafc);
+    padding: 40px;
+}
+
+    .graph-section h2 {
+        margin-bottom: 5px;
+        color: #1f2937;
+        font-weight: 600;
+    }
+
+    .graph-section p {
+        color: #6b7280;
+        font-size: 14px;
+    }
+
+    /* ✅ GRAPH SIZE CONTROL */
+
+    .graph-section .recharts-responsive-container {
+        height: 220px !important; /* ✅ reduced height */
+
+        margin-top: 20px;
+    }
+
+/* ✅ CHART STYLE */
+
+.recharts-cartesian-grid line {
+    stroke: #e5e7eb;
+    stroke-dasharray: 4 4;
+}
+
+.recharts-xAxis text,
+.recharts-yAxis text {
+    fill: #6b7280;
+    font-size: 12px;
+}
+
+.recharts-line path {
+    animation: fadeIn 0.8s ease-in-out;
+}
+
+.recharts-dot:hover {
+    transform: scale(1.4);
+}
+
+.recharts-layer path {
+    filter: drop-shadow(0 4px 8px rgba(45, 91, 255, 0.25));
+}
+
+/* HEADER TITLE */
+
+h1 {
+    text-align: center;
+    margin-top: 10px;
+    color: #111827;
+}
+
+/* ✅ RESPONSIVE */
+
+/* Tablet */
+
+@media (max-width: 1000px) {
+
+    .login-container {
+        flex-direction: column;
+    }
+
+    .login-box,
+    .graph-section {
+        width: 100%;
+        flex: unset;
+    }
+}
+
+/* Mobile */
+
+@media (max-width: 600px) {
+
+    .login-box {
+        padding: 30px;
+    }
+
+    h1 {
+        font-size: 20px;
+    }
+}
+
+/* ANIMATION */
+
+@keyframes fadeIn {
+
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }

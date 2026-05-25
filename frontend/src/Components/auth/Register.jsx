@@ -1,7 +1,19 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../api";
-import "./Register.css";
+import "./Login.css"; 
+import Navbar from "../common/Navbar";
+import {
+    User,
+    Mail,
+    Lock,
+    Phone,
+    Home,
+    Users,
+    Zap,
+    BarChart3
+} from "lucide-react";
+
 function Register() {
     const [form, setForm] = useState({
         username: "",
@@ -11,106 +23,221 @@ function Register() {
         phoneNumber: "",
         address: ""
     });
-    const [errors, setErrors] = useState({});
+
     const [message, setMessage] = useState("");
     const navigate = useNavigate();
+
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
-    /* ✅ FRONTEND VALIDATION (MATCHES BACKEND) */
-    const validate = () => {
-        const errs = {};
-        // Username
-        if (form.username.length < 3) {
-            errs.username = "Username must be at least 3 characters";
-        }
-        // Email
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
-            errs.email = "Invalid email format";
-        }
-        // Password
-        if (
-            !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{6,}$/.test(form.password)
-        ) {
-            errs.password =
-                "Password must contain uppercase, lowercase, number & special character";
-        }
-        // Phone Number
-        if (!/^[6-9]\d{9}$/.test(form.phoneNumber)) {
-            errs.phoneNumber = "Invalid phone number";
-        }
-        // Address
-        if (form.address.length < 3) {
-            errs.address = "Address must be at least 3 characters";
-        }
-        setErrors(errs);
-        return Object.keys(errs).length === 0;
-    };
+
     const submit = async (e) => {
         e.preventDefault();
         setMessage("");
-        if (!validate()) return;
+
         try {
             await api.post("/auth/register", form);
             setMessage("✅ Registration successful! Redirecting to login...");
             setTimeout(() => navigate("/"), 1500);
         } catch (err) {
-            let errorMsg =
-                typeof err.response?.data === "string"
-                    ? err.response.data
-                    : err.response?.data?.message || "Server error";
-            if (errorMsg.toLowerCase().includes("exists")) {
-                setMessage("⚠️ Already registered. Please login.");
-            } else {
-                setMessage(errorMsg);
-            }
+            setMessage(err.response?.data || "Registration failed");
         }
     };
+
     return (
-<div className="auth-container">
-<h2>Register</h2>
-<form onSubmit={submit}>
-<div className="form-group">
-<label>Username</label>
-<input name="username" onChange={handleChange} />
-                    {errors.username && <small>{errors.username}</small>}
-</div>
-<div className="form-group">
-<label>Email</label>
-<input name="email" type="email" onChange={handleChange} />
-                    {errors.email && <small>{errors.email}</small>}
-</div>
-<div className="form-group">
-<label>Password</label>
-<input name="password" type="password" onChange={handleChange} />
-                    {errors.password && <small>{errors.password}</small>}
-</div>
-<div className="form-group">
-<label>Role</label>
-<select name="role" value={form.role} onChange={handleChange}>
-<option value="Consumer">Consumer</option>
-<option value="Technician">Technician</option>
-<option value="Supervisor">Supervisor</option>
-</select>
-</div>
-<div className="form-group">
-<label>Phone Number</label>
-<input name="phoneNumber" onChange={handleChange} />
-                    {errors.phoneNumber && <small>{errors.phoneNumber}</small>}
-</div>
-<div className="form-group">
-<label>Address</label>
-<input name="address" onChange={handleChange} />
-                    {errors.address && <small>{errors.address}</small>}
-</div>
-<button type="submit">Register</button>
-</form>
-            {message && <p>{message}</p>}
-<p>
-                Already registered?{" "}
-<span onClick={() => navigate("/")}>Please sign in</span>
-</p>
-</div>
+        <>
+        <Navbar/>
+
+        <div className="container">
+
+            {/* LEFT SECTION */}
+            <div className="left-section">
+
+                <div className="icon-box">
+                    <Zap className="zap-icon" />
+                </div>
+
+                <h1>Create Account</h1>
+                <p className="subtitle">
+                    Register to access Utility Management System
+                </p>
+
+                <form onSubmit={submit}>
+
+                    {/* USERNAME */}
+                    <div className="input-box">
+                        <User className="input-icon" />
+                        <input
+                            name="username"
+                            placeholder="Username"
+                            value={form.username}
+                            onChange={handleChange}
+                            required
+                        />
+                    </div>
+
+                    {/* EMAIL */}
+                    <div className="input-box">
+                        <Mail className="input-icon" />
+                        <input
+                            type="email"
+                            name="email"
+                            placeholder="Email"
+                            value={form.email}
+                            onChange={handleChange}
+                            required
+                        />
+                    </div>
+
+                    {/* PASSWORD */}
+                    <div className="input-box">
+                        <Lock className="input-icon" />
+                        <input
+                            type="password"
+                            name="password"
+                            placeholder="Password"
+                            value={form.password}
+                            onChange={handleChange}
+                            required
+                        />
+                    </div>
+
+                    {/* ROLE */}
+                    <div className="input-box">
+                        <Users className="input-icon" />
+                        <select
+                            name="role"
+                            value={form.role}
+                            onChange={handleChange}
+                        >
+                            <option value="Consumer">Consumer</option>
+                            <option value="Technician">Technician</option>
+                            <option value="Supervisor">Supervisor</option>
+                        </select>
+                    </div>
+
+                    {/* PHONE */}
+                    <div className="input-box">
+                        <Phone className="input-icon" />
+                        <input
+                            name="phoneNumber"
+                            placeholder="Phone Number"
+                            value={form.phoneNumber}
+                            onChange={handleChange}
+                            required
+                        />
+                    </div>
+
+                    {/* ADDRESS */}
+                    <div className="input-box">
+                        <Home className="input-icon" />
+                        <input
+                            name="address"
+                            placeholder="Address"
+                            value={form.address}
+                            onChange={handleChange}
+                            required
+                        />
+                    </div>
+
+                    <button type="submit" className="login-btn">
+                        Register
+                    </button>
+                </form>
+
+                {message && <p className="message">{message}</p>}
+
+                <div className="divider">
+                    <div className="line"></div>
+                    <span>or</span>
+                    <div className="line"></div>
+                </div>
+
+                <p className="signup-text">
+                    Already have an account?{" "}
+                    <span onClick={() => navigate("/")}>Login</span>
+                </p>
+            </div>
+
+            {/* RIGHT SECTION (SAME AS LOGIN) */}
+            {/* RIGHT SECTION */}
+            <div className="right-section">
+                <div className="content">
+
+                    <h3>Monitor Your Electricity Consumption</h3>
+                    <p>
+
+                        Track usage, analyze trends and manage your Consumptions.
+                    </p>
+
+                    {/* DASHBOARD */}
+                    <div className="dashboard-card">
+
+                        <div className="top-bar">
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                        </div>
+
+                        <div className="graph">
+                            <div className="bar bar1"></div>
+                            <div className="bar bar2"></div>
+                            <div className="bar bar3"></div>
+                            <div className="bar bar4"></div>
+                            <div className="bar bar5"></div>
+                            <div className="bar bar6"></div>
+                            <div className="bar bar7"></div>
+                        </div>
+
+                        <div className="stats">
+                            {/* <div className="stat-box">
+                                <Zap className="stat-icon" />
+                                <h3>230 V</h3>
+                                <p>Voltage</p>
+                            </div>*/}
+
+                            <div className="stat-box">
+                                <BarChart3 className="stat-icon" />
+                                <h3>1200</h3>
+                                <p>kWh Usage</p>
+                            </div>
+
+                            {/*<div className="stat-box">
+                                <Gauge className="stat-icon" />
+                                <h3>82%</h3>
+                                <p>Efficiency</p>
+                            </div>*/}
+                        </div>
+                    </div>
+
+                    {/* METER */}
+                    <div className="meter">
+                        <div className="meter-inner">
+                            <Zap className="meter-icon" />
+                            <div className="meter-display">1287.45</div>
+                            <p>kWh</p>
+
+                            <div className="meter-line">
+                                <div className="meter-fill"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* TOWER */}
+                    <img
+
+                        src="https://cdn-icons-png.flaticon.com/512/2942/2942813.png"
+
+                        alt="tower"
+
+                        className="tower"
+
+                    />
+                </div>
+            </div>
+            </div>
+        </>
     );
 }
+
 export default Register;

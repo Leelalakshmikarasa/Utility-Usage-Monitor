@@ -152,6 +152,13 @@ app.UseStaticFiles();
 
 app.UseSwagger();
 
+
+
+
+
+
+
+
 app.UseSwaggerUI();
 
 app.UseAuthentication();

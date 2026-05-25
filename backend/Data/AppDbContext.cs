@@ -42,7 +42,7 @@ namespace backend.Data
                 .HasOne(c => c.Device)
                 .WithMany(d => d.Complaints)
                 .HasForeignKey(c => c.DeviceId)
-                .OnDelete(DeleteBehavior.Restrict); // ⭐ IMPORTANT
+                .OnDelete(DeleteBehavior.Restrict); 
 
             // ✅ Consumption → User (NO ACTION)
             modelBuilder.Entity<UtilityConsumption>()

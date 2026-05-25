@@ -1,7 +1,8 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
-using backend.Repos;
+using backend.DTOs;
 using backend.Models;
+using backend.Repos;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Controllers
 {
@@ -35,8 +36,25 @@ namespace backend.Controllers
         }
 
         [HttpPost]
-        public IActionResult Add(UtilityConsumption consumption)
+        public IActionResult Add(ConsumptionDTO dto)
         {
+            var device = _devices.GetAll()
+                .FirstOrDefault(d =>
+                    d.DeviceName == dto.DeviceName &&
+                    d.UserId == dto.UserId);
+
+            if (device == null)
+                return BadRequest("Invalid device name");
+
+            var consumption = new UtilityConsumption
+            {
+                UtilityDeviceId = device.Id,     
+                UserId = dto.UserId,
+                Units = dto.Units,
+                Cost = dto.Cost,
+                Date = new DateTime(dto.Year, dto.Month, dto.Day)
+            };
+
             _consumption.Add(consumption);
             return Ok(consumption);
         }

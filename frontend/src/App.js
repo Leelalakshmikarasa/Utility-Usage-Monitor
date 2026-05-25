@@ -1,33 +1,75 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 
 import Login from "./Components/auth/Login";
+
 import Register from "./Components/auth/Register";
+
 import SupervisorDashboard from "./Components/pages/SupervisorDashboard";
+
 import TechnicianDashboard from "./Components/pages/TechnicianDashboard";
+
 import UserDashboard from "./Components/pages/UserDashboard";
 
-// ✅ Import Navbar
 import Navbar from "./Components/common/Navbar";
 
-function App() {
+// ✅ Layout Wrapper
+
+function Layout() {
+
+    const location = useLocation();
+
+    // ✅ Define auth pages
+
+    const authRoutes = ["/", "/register"];
+
+    // ✅ Hide Navbar on login/register pages
+
+    const hideNavbar = authRoutes.includes(location.pathname);
+
     return (
-        <BrowserRouter>
-            <div>
-                <h1>Utility Usage Monitor</h1>
+        <div className="app-container">
 
-                {/* ✅ Navbar added globally */}
-                <Navbar />
+            {/* ✅ Navbar (only after login pages) */}
 
+            {!hideNavbar && (
+                <div className="navbar-wrapper">
+                    <Navbar />
+                </div>
+
+            )}
+
+            {/* ✅ Page Content */}
+            <div className="page-content">
                 <Routes>
+
+                    {/* AUTH ROUTES */}
                     <Route path="/" element={<Login />} />
                     <Route path="/register" element={<Register />} />
+
+                    {/* DASHBOARD ROUTES */}
                     <Route path="/supervisor" element={<SupervisorDashboard />} />
                     <Route path="/technician" element={<TechnicianDashboard />} />
                     <Route path="/consumer" element={<UserDashboard />} />
                 </Routes>
             </div>
-        </BrowserRouter>
+        </div>
+
     );
+
+}
+
+// ✅ MAIN APP
+
+function App() {
+
+    return (
+        <BrowserRouter>
+            <Layout />
+        </BrowserRouter>
+
+    );
+
 }
 
 export default App;
+

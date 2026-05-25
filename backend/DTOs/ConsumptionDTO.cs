@@ -11,9 +11,8 @@ namespace backend.DTOs
         public int Year { get; set; }
 
         public string UserId { get; set; } = "";
-        public int UtilityDeviceId { get; set; }
 
-        
-        
+        // ✅ ✅ CHANGED
+        public string DeviceName { get; set; } = "";
     }
 }
