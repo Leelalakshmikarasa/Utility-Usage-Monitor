@@ -3,13 +3,26 @@
     background: linear-gradient(180deg, #1e3a8a, #2563eb);
     padding: 20px;
     color: white;
+    /* ✅ FIXED SIDEBAR */
+    position: fixed;
+    top: 75px; /* ✅ below navbar */
+    left: 0;
+    height: calc(100vh - 65px); /* ✅ full height without navbar */
+
+    display: flex;
+    flex-direction: column;
+    border-top-right-radius: 20px;
+    border-bottom-right-radius: 20px;
+    z-index: 900; /* below navbar (navbar has 1000) */
 }
 
+    /* sidebar title */
     .sidebar h2 {
         text-align: center;
         margin-bottom: 25px;
     }
 
+    /* menu buttons */
     .sidebar button {
         width: 100%;
         padding: 12px;
@@ -19,8 +32,10 @@
         border: none;
         border-radius: 10px;
         cursor: pointer;
+        transition: 0.3s;
     }
 
+        /* active + hover */
         .sidebar button.active,
         .sidebar button:hover {
             background: rgba(255,255,255,0.35);

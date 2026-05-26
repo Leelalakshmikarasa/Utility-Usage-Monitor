@@ -4,7 +4,7 @@ import Login from "./Components/auth/Login";
 
 import Register from "./Components/auth/Register";
 
-import SupervisorDashboard from "./Components/pages/SupervisorDashboard";
+import SupervisorDashboard from "./Components/pages/supervisor/SupervisorDashboard";
 
 import TechnicianDashboard from "./Components/pages/TechnicianDashboard";
 

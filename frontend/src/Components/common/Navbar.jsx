@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import "./Navbar.css";
-import {  FaSignOutAlt } from "react-icons/fa";
+import { FaSignOutAlt } from "react-icons/fa";
 
 function Navbar() {
     const navigate = useNavigate();
@@ -50,13 +50,14 @@ function Navbar() {
                                 const username =
                                     payload["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"];
 
-                                return username ? username.charAt(0).toUpperCase() : "U";
+                                return username
+                                    ? username.charAt(0).toUpperCase()
+                                    : "U";
                             } catch {
                                 return "U";
                             }
                         })()}
                     </div>
-
 
                     <button onClick={logout} className="logout-btn">
                         <FaSignOutAlt /> Logout
