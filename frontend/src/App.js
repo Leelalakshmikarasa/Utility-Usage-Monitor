@@ -8,7 +8,7 @@ import SupervisorDashboard from "./Components/pages/SupervisorDashboard";
 
 import TechnicianDashboard from "./Components/pages/TechnicianDashboard";
 
-import UserDashboard from "./Components/pages/UserDashboard";
+import UserDashboard from "./Components/pages/user/UserDashboard";
 
 import Navbar from "./Components/common/Navbar";
 

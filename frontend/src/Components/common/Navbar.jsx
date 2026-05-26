@@ -1,5 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import "./Navbar.css";
+import {  FaSignOutAlt } from "react-icons/fa";
 
 function Navbar() {
     const navigate = useNavigate();
@@ -7,7 +8,6 @@ function Navbar() {
     const token = localStorage.getItem("token");
     let role = null;
 
-    // ✅ Decode role safely
     if (token) {
         try {
             const payload = JSON.parse(atob(token.split(".")[1]));
@@ -25,33 +25,43 @@ function Navbar() {
 
     return (
         <nav className="navbar">
+
+            {/* LEFT */}
             <div className="nav-left">
                 <Link to="/" className="nav-brand">
-                    Utility Monitor
+                    ⚡ Utility Monitor
                 </Link>
 
-                {role === "Consumer" && (
-                    <Link to="/consumer" className="nav-link">
-                        User
-                    </Link>
-                )}
-                {role === "Technician" && (
-                    <Link to="/technician" className="nav-link">
-                        Technician
-                    </Link>
-                )}
-                {role === "Supervisor" && (
-                    <Link to="/supervisor" className="nav-link">
-                        Supervisor
+                {role && (
+                    <Link to={`/${role.toLowerCase()}`} className="nav-link">
+                        Dashboard
                     </Link>
                 )}
             </div>
 
+            {/* RIGHT */}
             {token && (
                 <div className="nav-right">
+
+                    <div className="user-avatar">
+                        {(() => {
+                            try {
+                                const payload = JSON.parse(atob(token.split(".")[1]));
+                                const username =
+                                    payload["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"];
+
+                                return username ? username.charAt(0).toUpperCase() : "U";
+                            } catch {
+                                return "U";
+                            }
+                        })()}
+                    </div>
+
+
                     <button onClick={logout} className="logout-btn">
-                        Logout
+                        <FaSignOutAlt /> Logout
                     </button>
+
                 </div>
             )}
         </nav>

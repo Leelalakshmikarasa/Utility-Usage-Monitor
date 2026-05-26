@@ -183,8 +183,8 @@ function TechnicianDashboard() {
             <table>
                 <thead>
                     <tr>
-                        <th>UserId</th>
-                        <th>UserName</th>
+                        <th>ConsumerId</th>
+                        <th>ConsumerName</th>
                         <th>Device</th>
                         <th>Address</th>
                         <th>Complaint</th>
