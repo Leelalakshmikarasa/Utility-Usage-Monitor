@@ -4,10 +4,11 @@ import api from "../../../api";
 
 import TechnicianOverview from "./components/TechnicianOverview";
 import ConsumptionReport from "./components/ConsumptionReport";
+import DashboardOverview from "./components/DashboardOverview";
 
 function SupervisorDashboard() {
 
-    const [section, setSection] = useState("technicians");
+    const [section, setSection] = useState("overview");
     const [technicians, setTechnicians] = useState([]);
     const [consumptions, setConsumptions] = useState([]);
 
@@ -34,13 +35,23 @@ function SupervisorDashboard() {
         }
     };
 
+
     const menuItems = [
+        { key: "overview", label: "Overview", icon: "📊", onClick: () => setSection("overview") },
         { key: "technicians", label: "Technicians", icon: "👨‍🔧", onClick: () => setSection("technicians") },
         { key: "reports", label: "Reports", icon: "📊", onClick: () => setSection("reports") }
     ];
 
+
     return (
         <DashboardLayout menuItems={menuItems}>
+            {section === "overview" && (
+                <DashboardOverview
+                    technicians={technicians}
+                    consumptions={consumptions}
+                    setSection={setSection}  // ✅ THIS LINE FIXES ERROR
+                />
+            )}
 
             {section === "technicians" && (
                 <TechnicianOverview technicians={technicians} />
@@ -49,6 +60,8 @@ function SupervisorDashboard() {
             {section === "reports" && (
                 <ConsumptionReport consumptions={consumptions} />
             )}
+
+
 
         </DashboardLayout>
     );

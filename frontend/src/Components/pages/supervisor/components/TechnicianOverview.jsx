@@ -1,39 +1,63 @@
 function TechnicianOverview({ technicians }) {
     return (
-        <div className="section-card">
-            <h3>Technicians Overview</h3>
+        <div className="section-card tech-container">
 
-            <table>
-                <thead>
-                    <tr>
-                        <th>Technician</th>
-                        <th>Area</th>
-                        <th>Consumers</th>
-                        <th>Total</th>
-                        <th>Pending</th>
-                        <th>Resolved</th>
-                    </tr>
-                </thead>
+            <h3 className="tech-title">Technicians Overview</h3>
 
-                <tbody>
-                    {technicians.length === 0 ? (
-                        <tr>
-                            <td colSpan="6">No data available</td>
-                        </tr>
-                    ) : (
-                        technicians.map((t, i) => (
-                            <tr key={i}>
-                                <td>{t.username}</td>
-                                <td>{t.address}</td>
-                                <td>{t.consumersCount}</td>
-                                <td>{t.totalComplaints}</td>
-                                <td className="warning">{t.pendingComplaints}</td>
-                                <td className="success">{t.resolvedComplaints}</td>
-                            </tr>
-                        ))
-                    )}
-                </tbody>
-            </table>
+            {technicians.length === 0 ? (
+                <p className="no-data">No technicians available</p>
+            ) : (
+                <div className="tech-list">
+
+                    {technicians.map((t, i) => (
+                        <div className="tech-card" key={i}>
+
+                            {/* LEFT SIDE */}
+                            <div className="tech-left">
+                                <div className="avatar-circle">
+                                    {t.username?.[0]?.toUpperCase()}
+                                </div>
+
+                                <div className="tech-info">
+                                    <strong>{t.username}</strong>
+                                    <p>{t.address}</p>
+                                </div>
+                            </div>
+
+                            {/* RIGHT SIDE STATS */}
+                            <div className="tech-stats">
+
+                                <div>
+                                    <span className="label">Consumers</span>
+                                    <strong>{t.consumersCount}</strong>
+                                </div>
+
+                                <div>
+                                    <span className="label">Total Complaints</span>
+                                    <strong>{t.totalComplaints}</strong>
+                                </div>
+
+                                <div>
+                                    <span className="label">Pending</span>
+                                    <strong className="pending">
+                                        {t.pendingComplaints}
+                                    </strong>
+                                </div>
+
+                                <div>
+                                    <span className="label">Resolved</span>
+                                    <strong className="success">
+                                        {t.resolvedComplaints}
+                                    </strong>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    ))}
+
+                </div>
+            )}
         </div>
     );
 }

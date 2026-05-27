@@ -10,6 +10,7 @@ function Register() {
         username: "",
         email: "",
         password: "",
+        confirmPassword: "",
         role: "Consumer",
         phoneNumber: "",
         address: ""
@@ -23,19 +24,34 @@ function Register() {
 
     const submit = async (e) => {
         e.preventDefault();
+
+        // ✅ CONFIRM PASSWORD VALIDATION
+        if (form.password !== form.confirmPassword) {
+            setMessage("❌ Password and Confirm Password do not match");
+            return; // ⛔ STOP SUBMISSION
+        }
+
         try {
-            await api.post("/auth/register", form);
+            await api.post("/auth/register", {
+                username: form.username,
+                email: form.email,
+                password: form.password,
+                role: form.role,
+                phoneNumber: form.phoneNumber,
+                address: form.address
+            });
+
             setMessage("✅ Registration successful!");
             setTimeout(() => navigate("/"), 1500);
         } catch {
-            setMessage("Registration failed");
+            setMessage("❌ Registration failed");
         }
     };
+
 
     return (
         <>
             <Navbar />
-            <div className="particles"></div>
 
             <div
                 className="login-container"
@@ -43,14 +59,15 @@ function Register() {
                     backgroundImage: `url(${process.env.PUBLIC_URL}/powerstation.jpg)`,
                     backgroundSize: "cover",
                     backgroundPosition: "center",
-                    backgroundRepeat: "no-repeat"
+                    backgroundRepeat: "no-repeat",
+                    backgroundAttachment: "fixed"
                 }}
             >
+                {/* LEFT */}
                 <div className="left-section">
                     <div className="content">
                         <h1>
-                            Monitor. Analyze.
-                            <br />
+                            Monitor. Analyze.<br />
                             Optimize <span>Energy</span>
                         </h1>
                         <p>Track electricity usage and gain insights.</p>
@@ -62,28 +79,75 @@ function Register() {
                     </div>
                 </div>
 
+                {/* RIGHT */}
                 <div className="right-section">
-                    <div className="login-card">
+                    <div className="login-card register-card">
                         <div className="logo-circle"><Zap /></div>
                         <h2>Create Account</h2>
 
-                        <form onSubmit={submit}>
-                            <div className="input-group"><User /><input name="username" placeholder="Username" onChange={handleChange} required /></div>
-                            <div className="input-group"><Mail /><input name="email" type="email" placeholder="Email" onChange={handleChange} required /></div>
-                            <div className="input-group"><Lock /><input name="password" type="password" placeholder="Password" onChange={handleChange} required /></div>
-                            <div className="input-group"><Users /><select name="role" onChange={handleChange}><option>Consumer</option><option>Technician</option><option>Supervisor</option></select></div>
-                            <div className="input-group"><Phone /><input name="phoneNumber" placeholder="Phone Number" onChange={handleChange} required /></div>
-                            <div className="input-group"><Home /><input name="address" placeholder="Address" onChange={handleChange} required /></div>
+                        <form onSubmit={submit} className="register-grid">
 
-                            <button className="login-btn">Register →</button>
+                            <div className="input-group">
+                                <User />
+                                <input name="username" placeholder="Username" onChange={handleChange} required />
+                            </div>
+
+                            <div className="input-group">
+                                <Mail />
+                                <input name="email" type="email" placeholder="Email" onChange={handleChange} required />
+                            </div>
+
+                            <div className="input-group">
+                                <Lock />
+                                <input name="password" type="password" placeholder="Password" onChange={handleChange} required />
+                            </div>
+
+                            <div className="input-group">
+                                <Lock />
+                                <input
+                                    name="confirmPassword"
+                                    type="password"
+                                    placeholder="Confirm Password"
+                                    onChange={handleChange}
+                                    required
+                                    style={{
+                                        borderColor:
+                                            message.includes("do not match") ? "#ef4444" : "transparent"
+                                    }}
+                                />
+                               
+                            </div>
+
+                            <div className="input-group">
+                                <Users />
+                                <select name="role" onChange={handleChange}>
+                                    <option>Consumer</option>
+                                    <option>Technician</option>
+                                    <option>Supervisor</option>
+                                </select>
+                            </div>
+
+                            <div className="input-group">
+                                <Phone />
+                                <input name="phoneNumber" placeholder="Phone Number" onChange={handleChange} required />
+                            </div>
+
+                            <div className="input-group full-width">
+                                <Home />
+                                <input name="address" placeholder="Address" onChange={handleChange} required />
+                            </div>
+
+                            <button className="login-btn full-width">
+                                Register →
+                            </button>
+
                         </form>
 
                         {message && <p className="message">{message}</p>}
+
                         <p className="signup">
                             Already have an account?
-                            <span onClick={() => navigate("/")}>
-                                Sign in
-                            </span>
+                            <span onClick={() => navigate("/")}>Sign in</span>
                         </p>
                     </div>
                 </div>

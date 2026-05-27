@@ -17,7 +17,8 @@ function Sidebar({ menuItems }) {
                         item.onClick();
                     }}
                 >
-                    {item.icon} {item.label}
+                    <span className="icon">{item.icon}</span>
+                    {item.label}
                 </button>
             ))}
         </div>

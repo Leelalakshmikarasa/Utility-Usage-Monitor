@@ -29,7 +29,9 @@ function Navbar() {
             {/* LEFT */}
             <div className="nav-left">
                 <Link to="/" className="nav-brand">
-                    ⚡ Utility Monitor
+                    <span className="nav-brand">
+                        ⚡ Utility <span>Monitor</span>
+                    </span>
                 </Link>
 
                 {role && (
