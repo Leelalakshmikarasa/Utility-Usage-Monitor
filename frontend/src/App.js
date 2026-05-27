@@ -6,7 +6,7 @@ import Register from "./Components/auth/Register";
 
 import SupervisorDashboard from "./Components/pages/supervisor/SupervisorDashboard";
 
-import TechnicianDashboard from "./Components/pages/TechnicianDashboard";
+import TechnicianDashboard from "./Components/pages/Technician/TechnicianDashboard";
 
 import UserDashboard from "./Components/pages/user/UserDashboard";
 
