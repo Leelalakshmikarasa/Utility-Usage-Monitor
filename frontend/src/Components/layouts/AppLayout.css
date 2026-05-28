@@ -9,11 +9,13 @@ body {
 
 /* ===== DASHBOARD CONTENT DARK ===== */
 .dashboard-content {
-    flex: 1;
-    padding: 40px;
+    position: fixed;
+    top: 64px; /* ✅ EXACT navbar height */
+    left: 230px; /* ✅ sidebar width */
+    right: 0;
+    bottom: 0;
+    padding: 32px 40px 40px;
     overflow-y: auto;
-    margin-left: 230px;
-    /* ✅ REMOVE WHITE EFFECT */
     background: transparent;
 }
 
@@ -447,3 +449,691 @@ body {
     background: #3b82f6;
 }
 
+/* ===== REPORTS PAGE ===== */
+
+.report-page {
+    padding-top: 30px;
+    color: #e5e7eb;
+}
+
+/* HEADER */
+.report-header h2 {
+    font-size: 26px;
+    color: #f1f5f9;
+}
+
+.report-header p {
+    margin-top: 6px;
+    color: #94a3b8;
+}
+
+/* FILTER CARD */
+.report-filter-card {
+    margin-top: 20px;
+    padding: 20px;
+    border-radius: 18px;
+    background: rgba(15, 23, 42, 0.65);
+    backdrop-filter: blur(16px);
+    width: fit-content;
+}
+
+    .report-filter-card label {
+        display: block;
+        font-size: 13px;
+        color: #94a3b8;
+        margin-bottom: 6px;
+    }
+
+    .report-filter-card select {
+        padding: 10px 14px;
+        border-radius: 10px;
+        background: rgba(2, 6, 23, 0.8);
+        border: 1px solid rgba(255,255,255,0.1);
+        color: white;
+    }
+
+/* CHART CARD */
+.report-chart-card {
+    margin-top: 30px;
+    padding: 25px;
+    border-radius: 20px;
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(18px);
+}
+
+    .report-chart-card h3 {
+        margin-bottom: 15px;
+        color: #cbd5f5;
+    }
+
+/* CENTER FIX */
+.chart-wrapper {
+    display: flex;
+    justify-content: center;
+}
+
+/* CONTROL WIDTH */
+.chart-inner-large {
+    width: 100%;
+    max-width: 700px;
+    height: 250px;
+}
+
+/* ===== CONSUMER PAGE ===== */
+
+.consumer-page {
+    padding-top: 30px;
+}
+
+.consumer-header h2 {
+    color: #f1f5f9;
+    font-size: 26px;
+}
+
+.consumer-header p {
+    color: #94a3b8;
+    margin-top: 6px;
+}
+
+/* LIST */
+.consumer-list {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    margin-top: 25px;
+}
+
+/* CARD */
+.consumer-card {
+    display: grid;
+    align-items: stretch;
+    grid-template-columns: 1.5fr 2fr 1fr;
+    gap: 20px;
+    padding: 20px;
+    border-radius: 18px;
+    background: rgba(15, 23, 42, 0.65);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,0.05);
+    box-shadow: 0 10px 35px rgba(0,0,0,0.6);
+}
+
+/* LEFT */
+.consumer-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+    .consumer-left strong {
+        color: white;
+    }
+
+    .consumer-left p {
+        margin: 0;
+        font-size: 13px;
+        color: #94a3b8;
+    }
+
+/* ACTIONS */
+.consumer-actions {
+    display: flex;
+    gap: 12px;
+}
+
+    .consumer-actions select,
+    .consumer-actions input {
+        padding: 10px 12px;
+        border-radius: 10px;
+        background: rgba(2, 6, 23, 0.8);
+        border: 1px solid rgba(255,255,255,0.1);
+        color: white;
+    }
+
+/* RESULT */
+.consumer-result {
+    display: flex;
+    justify-content: space-around;
+    text-align: center;
+    height: 100%;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+    .consumer-result span {
+        font-size: 13px;
+        color: #94a3b8;
+    }
+
+    .consumer-result strong {
+        display: block;
+        color: #22c55e;
+        font-size: 16px;
+    }
+
+/* MOBILE */
+@media (max-width: 900px) {
+    .consumer-card {
+        grid-template-columns: 1fr;
+    }
+
+    .consumer-actions {
+        justify-content: space-between;
+    }
+}
+/* === FULLY DISABLE NATIVE ICON === */
+.month-input-wrapper input::-webkit-calendar-picker-indicator {
+    display: none !important;
+}
+
+/* WRAPPER */
+.month-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+    /* INPUT */
+    .month-input-wrapper input {
+        width: 100%;
+        padding: 10px 44px 10px 12px;
+        background: rgba(2, 6, 23, 0.85);
+        border-radius: 10px;
+        border: 1px solid rgba(255,255,255,0.12);
+        color: white;
+    }
+
+/* CUSTOM ICON BUTTON */
+.month-btn {
+    position: absolute;
+    right: 10px;
+    background: none;
+    border: none;
+    color: #e2e8f0;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 0;
+}
+
+    .month-btn:hover {
+        color: #60a5fa;
+    }
+
+/* DATE INPUT */
+.date-input {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    border-radius: 12px;
+    background: rgba(2, 6, 23, 0.85);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: #e5e7eb;
+    cursor: pointer;
+}
+
+    /* TEXT */
+    .date-input span {
+        font-size: 14px;
+    }
+
+/* ICON */
+.calendar-icon {
+    font-size: 16px;
+    opacity: 0.9;
+}
+
+/* HIDE REAL INPUT COMPLETELY */
+.date-input input[type="month"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* ===== MONTH FIELD ===== */
+
+.month-field {
+    display: flex;
+    padding-bottom: 16px;
+    flex-direction: column;
+}
+
+/* INPUT WRAPPER */
+.month-input-wrapper {
+    position: relative;
+}
+
+    /* INPUT */
+    .month-input-wrapper input[type="month"] {
+        width: 100%;
+        padding: 10px 44px 10px 12px;
+        border-radius: 10px;
+        background: rgba(2, 6, 23, 0.85);
+        border: 1px solid rgba(255,255,255,0.12);
+        color: white;
+    }
+
+    /* HIDE NATIVE ICON */
+    .month-input-wrapper input::-webkit-calendar-picker-indicator {
+        display: none;
+    }
+
+/* CALENDAR BUTTON */
+.month-btn {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #e2e8f0;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+    .month-btn:hover {
+        color: #60a5fa;
+    }
+
+/* HELPER TEXT */
+.month-helper {
+    margin-top: 4px;
+    font-size: 12px;
+    color: #94a3b8;
+}
+
+/* OPTIONAL: hide helper when date selected */
+.month-input-wrapper input:not(:placeholder-shown) + .month-btn + .month-helper {
+    display: none;
+}
+/* ================================
+   EQUAL HEIGHT FIX (FINAL)
+================================ */
+
+/* Lock inputs to SAME height */
+.consumer-actions select,
+.month-input-wrapper input {
+    height: 44px; /* ✅ EXACT SAME HEIGHT */
+}
+
+/* Month field occupies SAME height as select */
+.month-field {
+    position: relative;
+    height: 44px; /* ✅ MATCH INPUT HEIGHT */
+}
+
+/* Helper text is ABSOLUTE → does NOT affect height */
+.month-helper {
+    position: absolute;
+    left: 2px;
+    top: 48px; /* below input */
+    font-size: 12px;
+    color: #94a3b8;
+    pointer-events: none;
+}
+
+/* Prevent stretching */
+.consumer-actions {
+    align-items: flex-start;
+}
+
+/* Ensure right column stretches */
+.consumer-result {
+    height: 100%;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+/* ============================= */
+/* SPACE FOR SELECT DATE HELPER */
+/* ============================= */
+
+/* Default card padding is fine */
+.consumer-card {
+    padding-bottom: 20px;
+}
+
+    /* When helper text is visible, add space */
+    .consumer-card.has-helper {
+        padding-bottom: 36px; /* ✅ creates gap under Select date */
+    }
+
+/* Helper stays visually below input */
+.month-helper {
+    position: absolute;
+    top: 48px;
+    left: 0;
+    font-size: 12px;
+    color: #94a3b8;
+}
+
+/* ===== COMPLAINT LIST ===== */
+
+/* ===== ULTRA COMPACT COMPLAINT CARD (MATCH IMAGE) ===== */
+
+.complaint-list {
+    margin-top: 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px; /* ✅ tighter spacing between cards */
+}
+
+/* CARD */
+
+.complaint-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 18px; /* ✅ reduced height */
+
+    border-radius: 16px; /* ✅ slightly less round */
+
+    background: rgba(15, 23, 42, 0.68);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    box-shadow: 0 6px 22px rgba(0, 0, 0, 0.55);
+}
+
+/* LEFT */
+
+.complaint-left {
+    display: flex;
+    flex-direction: column;
+    gap: 2px; /* ✅ tighter vertical stack */
+}
+
+/* TITLE */
+
+.complaint-title {
+    font-size: 14px; /* ✅ smaller title */
+
+    font-weight: 600;
+    line-height: 18px; /* ✅ compact */
+
+    color: #f1f5f9;
+}
+
+/* DESCRIPTION */
+
+.complaint-desc {
+    font-size: 13px; /* ✅ smaller body */
+
+    line-height: 17px;
+    color: #9aa9bc;
+}
+
+/* DATE */
+
+.complaint-date {
+    font-size: 11px; /* ✅ very small (as image) */
+
+    color: #64748b;
+    margin-top: 1px;
+}
+
+/* RIGHT */
+
+.complaint-right {
+    display: flex;
+    align-items: center;
+}
+
+/* STATUS BADGE (VERY COMPACT) */
+
+.status-badge {
+    padding: 3px 10px; /* ✅ thinner pill */
+
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 14px;
+    border-radius: 999px; /* ✅ pill shape */
+}
+
+    /* BADGE COLORS */
+
+    .status-badge.pending {
+        background: rgba(251, 146, 60, 0.17);
+        color: #fb923c;
+    }
+
+    .status-badge.resolved {
+        background: rgba(34, 197, 94, 0.17);
+        color: #22c55e;
+    }
+
+/* ✅ FIX PAGE START POSITION (FOR ALL DASHBOARD SECTIONS) */
+
+.dashboard-content {
+    padding-top: 32px; /* prevents content from touching navbar */
+}
+
+/* ✅ FIX MY COMPLAINTS HEADING POSITION */
+
+.complaints-container {
+    margin-top: 12px; /* pushes "My Complaints" down correctly */
+}
+
+/* ✅ OPTIONAL: tighten header spacing */
+
+.complaints-header {
+    margin-bottom: 20px;
+}
+
+/* ===== MODAL OVERLAY ===== */
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(2, 6, 23, 0.75);
+    backdrop-filter: blur(6px);
+    z-index: 3000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* CARD */
+
+.modal-card {
+    width: 460px;
+    background: rgba(15, 23, 42, 0.9);
+    border-radius: 18px;
+    padding: 22px;
+    border: 1px solid rgba(255,255,255,0.08);
+}
+
+/* HEADER */
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+    .modal-header h3 {
+        margin: 0;
+        color: #f1f5f9;
+    }
+
+.close-btn {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+/* BODY */
+
+.modal-body {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-top: 16px;
+}
+
+    .modal-body input,
+    .modal-body select,
+    .modal-body textarea {
+        background: rgba(2,6,23,0.7);
+        border: 1px solid rgba(255,255,255,0.05);
+        border-radius: 10px;
+        padding: 10px 12px;
+        color: #e5e7eb;
+    }
+
+    .modal-body textarea {
+        resize: none;
+        min-height: 80px;
+    }
+
+/* BUTTON */
+
+.submit-btn {
+    margin-top: 6px;
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 10px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+    .submit-btn:hover {
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+    }
+
+/* ===== ADD COMPLAINT PAGE (SECOND IMAGE STYLE) ===== */
+
+.add-complaint-overlay {
+    position: relative;
+    min-height: 70vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 60px;
+}
+
+/* CARD */
+
+.add-complaint-card {
+    width: 480px;
+    padding: 28px 26px;
+    border-radius: 20px;
+    background: rgba(15, 23, 42, 0.75);
+    backdrop-filter: blur(18px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.65);
+}
+
+    /* TITLE */
+
+    .add-complaint-card h2 {
+        margin: 0;
+        color: #f1f5f9;
+        font-size: 22px;
+    }
+
+/* SUBTEXT */
+
+.sub-text {
+    margin-top: 6px;
+    font-size: 13px;
+    color: #94a3b8;
+}
+
+/* FORM GRID */
+
+.form-grid {
+    margin-top: 22px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+
+    /* INPUTS */
+
+    .form-grid input,
+    .form-grid select,
+    .form-grid textarea {
+        background: rgba(2, 6, 23, 0.7);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 12px;
+        padding: 11px 12px;
+        color: #e5e7eb;
+        font-size: 14px;
+    }
+
+/* TEXTAREA */
+
+.full-width {
+    grid-column: span 2;
+    min-height: 90px;
+    resize: none;
+}
+
+/* SUBMIT BUTTON */
+
+.submit-btn {
+    grid-column: span 2;
+    margin-top: 6px;
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: white;
+    border: none;
+    border-radius: 14px;
+    padding: 12px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+    .submit-btn:hover {
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+    }
+
+/* ===== MY COMPLAINTS HEADER ROW ===== */
+
+.complaints-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.complaints-header-left h2 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+    color: #f1f5f9;
+}
+
+.complaints-header-left p {
+    margin-top: 4px;
+    font-size: 14px;
+    color: #94a3b8;
+}
+
+/* ===== + NEW COMPLAINT BUTTON (PIXEL MATCH) ===== */
+
+.new-complaint-btn {
+    height: 38px;
+    padding: 0 18px;
+    /* ✅ EXACT DARK BLUE FROM IMAGE */
+
+    background-color: #1e3a8a;
+    /* ✅ TEXT COLOR */
+
+    color: #93c5fd;
+    border: none;
+    border-radius: 14px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+    .new-complaint-btn:hover {
+        background-color: #1d4ed8;
+    }
+ 

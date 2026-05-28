@@ -48,7 +48,13 @@ function UserDashboard() {
                 />
             )}
            
-            {section === "complaints" && <MyComplaints complaints={complaints} devices={devices} />}
+            {section === "complaints" && (
+                <MyComplaints
+                    complaints={complaints}
+                    devices={devices}
+                    onNewComplaint={() => setSection("add")}   // ✅ KEY LINE
+                />
+            )}
             {section === "add" && <AddComplaint userId={userId} devices={devices} setComplaints={setComplaints} />}
         </DashboardLayout>
     );

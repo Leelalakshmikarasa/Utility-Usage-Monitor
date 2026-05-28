@@ -6,10 +6,12 @@ import Complaints from "./Components/Complaints";
 import AddDevice from "./Components/AddDevice";
 import ConsumerDetails from "./Components/ConsumerDetails";
 import Reports from "./Components/Reports";
+import TechnicianOverview from "./Components/TechnicianOverview";
 
 function TechnicianDashboard() {
 
-    const [section, setSection] = useState("complaints");
+    const [section, setSection] = useState("overview");
+
 
     const [complaints, setComplaints] = useState([]);
     const [consumers, setConsumers] = useState([]);
@@ -37,18 +39,31 @@ function TechnicianDashboard() {
     };
 
     const menuItems = [
+        { key: "overview", label: "Overview", icon: "📊", onClick: () => setSection("overview") },
         { key: "complaints", label: "Complaints", icon: "📄", onClick: () => setSection("complaints") },
         { key: "add", label: "Add Device", icon: "➕", onClick: () => setSection("add") },
         { key: "consumers", label: "Consumers", icon: "👥", onClick: () => setSection("consumers") },
-        { key: "reports", label: "Reports", icon: "📊", onClick: () => setSection("reports") }
+        { key: "reports", label: "Reports", icon: "📈", onClick: () => setSection("reports") }
     ];
+    
 
     return (
         <DashboardLayout menuItems={menuItems}>
 
+            {/* ✅ OVERVIEW */}
+            {section === "overview" && (
+                <TechnicianOverview
+                    complaints={complaints}
+                    consumers={consumers}
+                />
+            )}
+            
+
             {/* ✅ COMPLAINTS */}
             {section === "complaints" && (
                 <Complaints
+
+                    complaints={complaints}
                     data={complaints}
                     onResolve={resolveComplaint}
                 />

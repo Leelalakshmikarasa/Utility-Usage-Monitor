@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Bar } from "react-chartjs-2";
 import {
     Chart as ChartJS,
@@ -12,19 +12,26 @@ import {
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 
 function Reports({ reportUsers = [] }) {
+
     const [selectedConsumer, setSelectedConsumer] = useState("");
+
+    useEffect(() => {
+        if (reportUsers.length > 0 && !selectedConsumer) {
+            setSelectedConsumer(reportUsers[0].username);
+        }
+    }, [reportUsers, selectedConsumer]);
 
     const deviceSet = new Set();
     const datasets = [];
 
     const filteredUsers = reportUsers.filter(
-        (u) => u.username === selectedConsumer
+        u => u.username === selectedConsumer
     );
 
-    filteredUsers.forEach((user, index) => {
+    filteredUsers.forEach(user => {
         const deviceMap = {};
 
-        user.devices.forEach((d) => {
+        user.devices.forEach(d => {
             if (d.highestConsumptionMonth) {
                 deviceSet.add(d.deviceName);
                 deviceMap[d.deviceName] = {
@@ -39,8 +46,9 @@ function Reports({ reportUsers = [] }) {
             label: user.username,
             data: [],
             meta: deviceMap,
-            backgroundColor: "#2563eb",
-            borderRadius: 6
+            borderRadius: 8,
+            barThickness: 30,
+            backgroundColor: "#3b82f6"
         });
     });
 
@@ -54,10 +62,14 @@ function Reports({ reportUsers = [] }) {
 
     const options = {
         responsive: true,
+        maintainAspectRatio: false,
         plugins: {
+            legend: {
+                labels: { color: "#cbd5f5" }
+            },
             tooltip: {
                 callbacks: {
-                    label: (ctx) => {
+                    label: ctx => {
                         const meta = datasets[ctx.datasetIndex].meta[ctx.label];
                         return meta
                             ? [`Units: ${meta.units}`, `Month: ${meta.month}`, `Year: ${meta.year}`]
@@ -65,32 +77,43 @@ function Reports({ reportUsers = [] }) {
                     }
                 }
             }
+        },
+        scales: {
+            x: { ticks: { color: "#94a3b8" } },
+            y: { ticks: { color: "#94a3b8" } }
         }
     };
 
     return (
-        <div className="section-card">
-            <h3>Reports</h3>
+        <div className="report-page">
 
-            {/* ✅ DROPDOWN */}
-            <select
-                value={selectedConsumer}
-                onChange={(e) => setSelectedConsumer(e.target.value)}
-            >
-                <option value="">Select Consumer</option>
-                {reportUsers.map((u) => (
-                    <option key={u.userId} value={u.username}>
-                        {u.username}
-                    </option>
-                ))}
-            </select>
+            <div className="report-header">
+                <h2>Usage Reports</h2>
+                <p>Device-wise highest consumption per consumer</p>
+            </div>
 
-            {/* ✅ GRAPH */}
-            {selectedConsumer && (
-                <div style={{ height: "300px", marginTop: "20px" }}>
-                    <Bar data={chartData} options={options} />
+            <div className="report-filter-card">
+                <label>Select Consumer</label>
+                <select
+                    value={selectedConsumer}
+                    onChange={e => setSelectedConsumer(e.target.value)}
+                >
+                    {reportUsers.map(u => (
+                        <option key={u.userId} value={u.username}>
+                            {u.username}
+                        </option>
+                    ))}
+                </select>
+            </div>
+
+            <div className="report-chart-card">
+                <div className="chart-wrapper">
+                    <div className="chart-inner-large">
+                        <Bar data={chartData} options={options} />
+                    </div>
                 </div>
-            )}
+            </div>
+
         </div>
     );
 }
