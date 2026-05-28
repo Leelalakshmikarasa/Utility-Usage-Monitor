@@ -52,7 +52,7 @@ function TechnicianOverview({ complaints, consumers }) {
 
             {/* ===== HEADER ===== */}
             <div className="overview-header">
-                <h2>Dashboard</h2>
+                <h2>Overview</h2>
                 <p>Quick summary of today’s activity</p>
             </div>
 

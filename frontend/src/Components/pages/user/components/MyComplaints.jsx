@@ -33,7 +33,7 @@ function MyComplaints({ complaints, devices, onNewComplaint }) {
 <div className="overview-cards">
 <div className="card">
 <h1>{total}</h1>
-<p>Total Field</p>
+<p>Total Filed</p>
 <span className="badge blue">All time</span>
 </div>
  
@@ -72,7 +72,7 @@ function MyComplaints({ complaints, devices, onNewComplaint }) {
 </div>
 <div className="complaint-date">
 
-                                    Field: {new Date(c.date).toLocaleDateString()}
+                                    Filed: {new Date(c.date).toLocaleDateString()}
 </div>
 </div>
  

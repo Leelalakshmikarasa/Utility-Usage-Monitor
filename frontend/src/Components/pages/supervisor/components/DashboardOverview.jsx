@@ -88,7 +88,7 @@ function DashboardOverview({ technicians, consumptions, setSection }) {
 
             {/* ✅ HEADER */}
             <div className="overview-header">
-                <h2>Technicians Overview</h2>
+                <h2>Overview</h2>
                 <p>{activeTechs} technicians active • Updated just now</p>
             </div>
 

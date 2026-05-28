@@ -110,9 +110,9 @@ namespace backend.Controllers
                     deviceId = d.Id,
                     deviceName = d.DeviceName,
                     complaint = c.Title,
+                    description = c.Description, // ✅ ADD THIS
                     status = c.Status,
-
-                    date = c.Date  
+                    date = c.Date
                 }
             ).ToList();
 
@@ -221,6 +221,24 @@ namespace backend.Controllers
                 .ToList();
 
             return Ok(new { Users = finalResult });
+        }
+
+        // ✅ TECHNICIAN PROFILE (LOGGED-IN USER)
+        [HttpGet("profile")]
+        public IActionResult GetTechnicianProfile()
+        {
+            var technician = GetCurrentTechnician();
+            if (technician == null)
+                return Unauthorized();
+
+            return Ok(new
+            {
+                userId = technician.UserId,
+                username = technician.Username,
+                email = technician.Email,
+                phoneNumber = technician.PhoneNumber,
+                address = technician.Address
+            });
         }
     }
 }

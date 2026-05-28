@@ -12,6 +12,8 @@ function AddComplaint({ userId, devices, setComplaints }) {
 
     const [date, setDate] = useState("");
 
+    const [success, setSuccess] = useState(false); // ✅ popup state
+
     const submit = async () => {
 
         if (!deviceId || !title || !description || !date) {
@@ -22,98 +24,97 @@ function AddComplaint({ userId, devices, setComplaints }) {
 
         }
 
-        try {
+        await api.post(`/user/${userId}/complaint`, {
 
-            await api.post(`/user/${userId}/complaint`, {
+            deviceId: Number(deviceId),
 
-                deviceId: Number(deviceId),
+            title,
 
-                title,
+            description,
 
-                description,
+            date
 
-                date
+        });
 
-            });
+        const res = await api.get(`/user/${userId}/complaints`);
 
-            const res = await api.get(`/user/${userId}/complaints`);
+        setComplaints(res.data || []);
 
-            setComplaints(res.data || []);
+        // ✅ reset
 
-            alert("Complaint submitted successfully!");
+        setTitle("");
 
-        } catch (err) {
+        setDescription("");
 
-            console.error(err);
+        setDate("");
 
-            alert("Error submitting complaint");
+        // ✅ show popup
 
-        }
+        setSuccess(true);
+
+        setTimeout(() => setSuccess(false), 3000);
 
     };
 
     return (
-        <div className="add-complaint-overlay">
+        <div className="section-card">
 
-            <div className="add-complaint-card">
+            <h3>Add Complaint</h3>
 
-                <h2>Add Complaint</h2>
-                <p className="sub-text">Tell us your issue and we will resolve it</p>
+            {/* ✅ FORM GRID */}
+            <div className="form-grid">
 
-                <div className="form-grid">
+                <select value={deviceId} onChange={e => setDeviceId(e.target.value)}>
+                    <option value="">Select Device</option>
 
-                    <select value={deviceId} onChange={e => setDeviceId(e.target.value)}>
-                        <option value="">Select Device</option>
+                    {devices.map(d => (
+                        <option key={d.id} value={d.id}>{d.deviceName}</option>
 
-                        {devices.map(d => (
-                            <option key={d.id} value={d.id}>
+                    ))}
+                </select>
 
-                                {d.deviceName}
-                            </option>
+                <input type="date" value={date} onChange={e => setDate(e.target.value)} />
 
-                        ))}
-                    </select>
+                <input
 
-                    <input
+                    placeholder="Complaint Title"
 
-                        type="date"
+                    value={title}
 
-                        value={date}
+                    onChange={e => setTitle(e.target.value)}
 
-                        onChange={e => setDate(e.target.value)}
+                />
 
-                    />
+                {/* ✅ FULL WIDTH TEXTAREA */}
+                <textarea
 
-                    <input
+                    placeholder="Describe your issue..."
 
-                        placeholder="Complaint Title"
+                    value={description}
 
-                        value={title}
+                    onChange={e => setDescription(e.target.value)}
 
-                        onChange={e => setTitle(e.target.value)}
+                    className="full-width"
 
-                    />
+                />
 
-                    <textarea
+                {/* ✅ BUTTON */}
+                <button className="submit-btn" onClick={submit}>
 
-                        placeholder="Describe your issue..."
-
-                        value={description}
-
-                        onChange={e => setDescription(e.target.value)}
-
-                        className="full-width"
-
-                    />
-
-                    <button className="submit-btn" onClick={submit}>
-
-                        Submit Complaint
-                    </button>
-
-                </div>
+                    Submit
+                </button>
 
             </div>
+
+            {/* ✅ SUCCESS POPUP */}
+
+            {success && (
+                <div className="success-popup">
+
+                    ✅ Complaint submitted successfully! We will resolve it soon.
+                </div>
+
+            )}
 
         </div>
 

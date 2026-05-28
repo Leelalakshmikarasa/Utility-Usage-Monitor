@@ -6,7 +6,7 @@ function Sidebar({ menuItems }) {
 
     return (
         <div className="sidebar">
-            <h2>Dashboard</h2>
+            <h2>Control Panel</h2>
 
             {menuItems.map(item => (
                 <button

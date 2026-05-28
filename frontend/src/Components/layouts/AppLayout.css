@@ -9,14 +9,11 @@ body {
 
 /* ===== DASHBOARD CONTENT DARK ===== */
 .dashboard-content {
-    position: fixed;
-    top: 64px; /* ✅ EXACT navbar height */
-    left: 230px; /* ✅ sidebar width */
-    right: 0;
-    bottom: 0;
+    margin-top: 64px; /* ✅ push below navbar */
+    margin-left: 230px; /* ✅ sidebar space */
     padding: 32px 40px 40px;
+    min-height: calc(100vh - 64px);
     overflow-y: auto;
-    background: transparent;
 }
 
 /* ✅ REMOVE WHITE CARDS GLOBALLY */
@@ -1008,28 +1005,27 @@ body {
 /* ===== ADD COMPLAINT PAGE (SECOND IMAGE STYLE) ===== */
 
 .add-complaint-overlay {
-    position: relative;
-    min-height: 70vh;
+    width: 100%;
     display: flex;
     justify-content: center;
     align-items: flex-start;
-    padding-top: 60px;
+    padding: 20px 60px; /* ✅ balanced left-right like dashboard */
 }
 
 /* CARD */
 
 .add-complaint-card {
-    width: 480px;
-    padding: 28px 26px;
+    width: 100%; /* ✅ FULL width */
+    max-width: 950px; /* ✅ PERFECT dashboard width */
+
+    padding: 28px 30px;
     border-radius: 20px;
     background: rgba(15, 23, 42, 0.75);
     backdrop-filter: blur(18px);
     border: 1px solid rgba(255, 255, 255, 0.08);
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.65);
 }
-
     /* TITLE */
-
     .add-complaint-card h2 {
         margin: 0;
         color: #f1f5f9;
@@ -1062,9 +1058,24 @@ body {
         border: 1px solid rgba(255, 255, 255, 0.06);
         border-radius: 12px;
         padding: 11px 12px;
-        color: #e5e7eb;
+        color: #ffffff; /* ✅ makes input text bright white */
         font-size: 14px;
     }
+        /* ✅ Placeholder text (Complaint Title, Describe issue) */
+        .form-grid input::placeholder,
+        .form-grid textarea::placeholder {
+            color: #ffffff; /* ✅ makes placeholder WHITE */
+            opacity: 1;
+        }
+        /* ✅ Date text color */
+        .form-grid input[type="date"] {
+            color: #ffffff;
+        }
+
+            /* ✅ Calendar icon (Chrome/Edge) */
+            .form-grid input[type="date"]::-webkit-calendar-picker-indicator {
+                filter: invert(1); /* ✅ turns icon WHITE */
+            }
 
 /* TEXTAREA */
 
